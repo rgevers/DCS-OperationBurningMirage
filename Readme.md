@@ -34,32 +34,38 @@ Testing can be achieved locally by simply running the mission. Note, if you don'
 Make sure to not be running the mission while editin the config file. It will get periodically overwritten. Even if the mission is paused it may have a stale version of the config in memory that it will overwrite your changes with.
 
  - Create zones in all of the appropriate areas of the map. Add them to the theater list in the config file using
-`"": {`
-	`"Coalition": "red",`
-	`"Health": 3000,`
-	`"MaxHealth": 3000`
-`},`
+```
+"": {
+	"Coalition": "red",
+	"Health": 3000,
+	"MaxHealth": 3000
+},
+```
 		- Set manufacturing source if needed.
 		- Set airport if needed. Example:
-`"Kibrit": {`
-	`"Airport": "Kibrit Air Base",`
-	`"Coalition": "red",`
-	`"Health": 3000,`
-	`"ManufacturingSource": true,`
-	`"MaxHealth": 3000`
-`},`
+```
+"Kibrit": {
+	"Airport": "Kibrit Air Base",
+	"Coalition": "red",
+	"Health": 3000,
+	"ManufacturingSource": true,
+	"MaxHealth": 3000
+},
+```
  - Adjust health as desired.
  - Run mission and check spectator view to assess.
  - Add connections to config file using
-`{`
-	`"SourceTheater": "",`
-	`"Health": 3000,`
-	`"MaxHealth": 3000,`
-	`"Reverse": false,`
-	`"DestinationTheater": "",`
-	`"Type": "HELO",`
-	`"Waypoints": []`
-  `},`
+```
+{
+	"SourceTheater": "",
+	"Health": 3000,
+	"MaxHealth": 3000,
+	"Reverse": false,
+	"DestinationTheater": "",
+	"Type": "HELO",
+	"Waypoints": []
+  },
+```
 	     - Explain reversal
  - Add player cold starts
  - Setup FARPs
