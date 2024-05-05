@@ -35,23 +35,15 @@ Make sure to not be running the mission while editin the config file. It will ge
 
  - Create zones in all of the appropriate areas of the map. Add them to the theater list in the config file using
 ```
-"": {
-	"Coalition": "red",
-	"Health": 3000,
-	"MaxHealth": 3000
-},
-```
-		- Set manufacturing source if needed.
-		- Set airport if needed. Example:
-```
-"Kibrit": {
-	"Airport": "Kibrit Air Base",
+"ZoneName": {
+	"Airport": "Moose Airport Name (If Relevant)",
 	"Coalition": "red",
 	"Health": 3000,
 	"ManufacturingSource": true,
 	"MaxHealth": 3000
 },
 ```
+	- Set manufacturing source is optional.
  - Adjust health as desired.
  - Run mission and check spectator view to assess.
  - Add connections to config file using
