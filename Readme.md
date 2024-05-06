@@ -1,3 +1,17 @@
+Disclaimer
+This script is still heavily work-in-progress. I'm sharing it publicly now primarily to make it easier to collaborate with JTF-111 who the mission was created for. If you want to know more reach out to that group via Discord.
+
+I am not providing any .miz files at this time. The config files are not intended to imply any political or historical meaning. Many regions modeled in DCS are experiencing ongoing conflicts. The author of this script is not expressing any opinion about these conflicts through this configuration. These tools are merely intended to facilitate dynamic mission creation for others who want to operate a server for their group. It is up to those mission creators to tell their own stories.
+
+Introduction
+This mission script is designed to provide persistent, dynamic campaign capabilities in an extensible way. It is similar to other dynamic campaigns in that it models control points with capture mechanics and resupply, but differs in a few key ways.
+ - The mission simulates time passing even when players aren't playing.
+ - The economic simulation is graph traversal based.
+ - Enemy unit behavior is replaceable.
+ - Map scenery objects are useable as targets without extra scripting or manually created triggers.
+
+The passing of time is achieved by a startup check. The current version expects to be run at least once per day, but a small change could be made to allow for the passing of multiple days on startup. All health-regen for control points is done during this "overnight" phase. If the server is paused when players are not present the red AI actions will not take place so the overall behavior is that the map will heal but no control will change. This encourages players to play frequently to keep their progress from being slowed by regeneration, but doesn't penalize them so much that progress is lost and control points flip back to red once taken.
+
 Naming Conventions
 All unit names should be prefixes of their groups. E.g. if a group is called "red-Tabuk-5" the units should be "red-Tabuk-5-1", "red-Tabuk-5-2", etc. This is because of a current issue with DCS and access to a unit's group name via Lua. This is also standard naming convention and good mission hygiene so as long as this is followed the correct associations can be made using unit names.
 
