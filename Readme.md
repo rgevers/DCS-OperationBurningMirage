@@ -1,9 +1,9 @@
-Disclaimer
+### Disclaimer
 This script is still heavily work-in-progress. I'm sharing it publicly now primarily to make it easier to collaborate with JTF-111 who the mission was created for. If you want to know more reach out to that group via Discord.
 
 I am not providing any .miz files at this time. The config files are not intended to imply any political or historical meaning. Many regions modeled in DCS are experiencing ongoing conflicts. The author of this script is not expressing any opinion about these conflicts through this configuration. These tools are merely intended to facilitate dynamic mission creation for others who want to operate a server for their group. It is up to those mission creators to tell their own stories.
 
-Introduction
+### Introduction
 This mission script is designed to provide persistent, dynamic campaign capabilities in an extensible way. It is similar to other dynamic campaigns in that it models control points with capture mechanics and resupply, but differs in a few key ways.
  - The mission simulates time passing even when players aren't playing.
  - The economic simulation is graph traversal based.
