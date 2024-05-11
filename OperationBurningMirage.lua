@@ -78,7 +78,7 @@ end
 
 --#region File Management
 local debugMode = 0
-local releaseVersion = 1
+local releaseVersion = 0 --TODO - Base this off of a trigger set in the script when making the file the _rc version
 
 local JSON = (loadfile('Scripts/JSON.lua'))()
 BASE:TraceAll(true)
@@ -177,13 +177,13 @@ local function SpawnPlaneConvoy(arguments)
   local coalition = arguments.coalition
   local sourceTheater = arguments.sourceTheater
   local destinationTheater = arguments.destinationTheater
-  
+
   local groupName = "conv-" .. sourceTheater .. "-" .. destinationTheater
   --If source theater has an airport spawn low, else spawn high (cross map is at-altitude already)
   --Fly to destination, land, takeoff (maybe) and return?
   --Add departure delay
   local spawnTheater = sourceTheater .. "-convoy"
-  local landingZone = destinationTheater .. "-convoy" 
+  local landingZone = destinationTheater .. "-convoy"
   local templateName = "template-" .. coalition .. "-planeConvoy"
   local spawnZone = ZONE:New(spawnTheater)
   if spawnZone == nil then
@@ -198,7 +198,6 @@ local function SpawnPlaneConvoy(arguments)
       :InitRepeatOnEngineShutDown()
       :OnSpawnGroup(
         function(SpawnGroup)
-
           local zone2 = ZONE:New(landingZone)
           local zoneVec2 = zone2:GetPointVec3()
           local coordinate2 = COORDINATE:NewFromVec3(zoneVec2)
@@ -410,7 +409,7 @@ end
 local function spawnArtilleryMission(sourceTheater, destinationTheater, initialDelay)
   if true then
     return -- TODO -shortcircuiting this method for now. Will come back when I can fix it.
-  end  
+  end
   env.info("Scheduling artillery package from " .. sourceTheater)
   local groupName = "artillery-" .. sourceTheater .. "-" .. destinationTheater
   local templateName = "template-red-artillery"
@@ -469,7 +468,7 @@ local function activateGroupByHealth(groupSetName, groupList, groupListSize, hea
     end
   else
     -- env.warning("Not activating group " ..
-      -- groupSetName .. ". groupListSize: " .. groupListSize .. " activateCount: " .. activateCount)
+    -- groupSetName .. ". groupListSize: " .. groupListSize .. " activateCount: " .. activateCount)
   end
 end
 
@@ -798,8 +797,10 @@ local function ProcessConnections(connections)
       end
 
       if connection.Type == "PLANE" then
-        local delay = math.random(10, 120)*60
-        timer.scheduleFunction(SpawnPlaneConvoy, {coalition = coalition, sourceTheater = sourceTheater, destinationTheater = destinationTheater}, timer.getTime() + delay)
+        local delay = math.random(10, 120) * 60
+        timer.scheduleFunction(SpawnPlaneConvoy,
+          { coalition = coalition, sourceTheater = sourceTheater, destinationTheater = destinationTheater },
+          timer.getTime() + delay)
         -- SpawnPlaneConvoy(coalition, sourceTheater, destinationTheater, delay)
       end
     end
@@ -880,9 +881,11 @@ if jsonStateContent then
           --This zone should attack if it can.
           if CurrentState.TheaterHealth[attackingTheater].Airport then
             --TODO If > 30 miles away, spawn a fixed wing attack flight. If < 30 miles spawn a helo attack flight.
-            local delay = math.random(10, 120)*60
-            timer.scheduleFunction(spawnSeadMission, {attackingTheater = attackingTheater, theaterToAttack = theaterToAttack}, timer.getTime() + delay)
-            timer.scheduleFunction(spawnStrikeMission, {attackingTheater = attackingTheater, theaterToAttack = theaterToAttack}, timer.getTime() + delay)
+            local delay = math.random(10, 120) * 60
+            timer.scheduleFunction(spawnSeadMission,
+              { attackingTheater = attackingTheater, theaterToAttack = theaterToAttack }, timer.getTime() + delay)
+            timer.scheduleFunction(spawnStrikeMission,
+              { attackingTheater = attackingTheater, theaterToAttack = theaterToAttack }, timer.getTime() + delay)
             attackingTheaters[attackingTheater] = theaterToAttack
             env.info("New air attack planned. " .. attackingTheater .. ":" .. theaterToAttack)
             AttackSchedule[attackingTheater] = theaterToAttack
@@ -893,33 +896,33 @@ if jsonStateContent then
     end
   end
   --TODO - Reintroduce these when I can make them work. Should be in addition to primary zone attack logic above so plan to run the loop a second time.
-    --       else
-    --         --Make sure the distance is not too far.
-    --         --TODO - Sort by nearest?
-    --         --TODO - Create ground attacks. Go for convoys in this first version? or let them intercept convoys on the way to the attack?
-    --         env.info("New ground attack planned. " .. attackingTheater .. ":" .. theaterToAttack)
-    --         spawnArtilleryMission(attackingTheater, theaterToAttack, 0)
-    --         attackingTheaters[attackingTheater] = theaterToAttack
+  --       else
+  --         --Make sure the distance is not too far.
+  --         --TODO - Sort by nearest?
+  --         --TODO - Create ground attacks. Go for convoys in this first version? or let them intercept convoys on the way to the attack?
+  --         env.info("New ground attack planned. " .. attackingTheater .. ":" .. theaterToAttack)
+  --         spawnArtilleryMission(attackingTheater, theaterToAttack, 0)
+  --         attackingTheaters[attackingTheater] = theaterToAttack
 
-    --         --In addition to attacking the theater, lets attack convoys supplying this theater.
-    --         for i, gp in pairs(coalition.getGroups(2)) do
-    --           local groupName = Group.getName(gp)
-    --           if contains(groupName, theaterToAttack) and starts_with(groupName, "conv-") then -- Don't have to worry about it being from this theater in the contains check
-    --             --This is a convoy from a theater to the one being attacked. Attack it too!
-    --             env.info("New convoy attack planned against " .. groupName .. ".")
-    --             spawnArmorMission(attackingTheater, gp, 0) --TODO - Specialize this based on convoy type.
-    --           end
-    --         end
-    --         break
-    --       end
-    --     end
-    --   end
-    -- end
+  --         --In addition to attacking the theater, lets attack convoys supplying this theater.
+  --         for i, gp in pairs(coalition.getGroups(2)) do
+  --           local groupName = Group.getName(gp)
+  --           if contains(groupName, theaterToAttack) and starts_with(groupName, "conv-") then -- Don't have to worry about it being from this theater in the contains check
+  --             --This is a convoy from a theater to the one being attacked. Attack it too!
+  --             env.info("New convoy attack planned against " .. groupName .. ".")
+  --             spawnArmorMission(attackingTheater, gp, 0) --TODO - Specialize this based on convoy type.
+  --           end
+  --         end
+  --         break
+  --       end
+  --     end
+  --   end
+  -- end
 
 
-      -- Spawn armor columns to attack convoys. Will pathing be hard here?
-      -- Identify convoys supplying this zone and attack them as well.
-    -- end
+  -- Spawn armor columns to attack convoys. Will pathing be hard here?
+  -- Identify convoys supplying this zone and attack them as well.
+  -- end
 else
   env.info("Failed to read JSON file.")
 end
@@ -982,10 +985,12 @@ function UnloadCargo(groupName)
     MESSAGE:New(groupName .. " cannot unload cargo. Not yet landed.", 20):ToGroup(mGroup)
     return
   end
-  
-  CurrentState.TheaterHealth[LandedStatus[groupName]].Health = CurrentState.TheaterHealth[LandedStatus[groupName]].Health + CargoStatus[groupName] --TODO: Different capacities by aircraft type.
+
+  CurrentState.TheaterHealth[LandedStatus[groupName]].Health = CurrentState.TheaterHealth[LandedStatus[groupName]]
+  .Health + CargoStatus[groupName]                                                                                                                 --TODO: Different capacities by aircraft type.
   if CurrentState.TheaterHealth[LandedStatus[groupName]].Health > CurrentState.TheaterHealth[LandedStatus[groupName]].MaxHealth then
-    CurrentState.TheaterHealth[LandedStatus[groupName]].Health = CurrentState.TheaterHealth[LandedStatus[groupName]].MaxHealth
+    CurrentState.TheaterHealth[LandedStatus[groupName]].Health = CurrentState.TheaterHealth[LandedStatus[groupName]]
+    .MaxHealth
   end
 
   CargoStatus[groupName] = 0
@@ -1006,7 +1011,7 @@ local function activateCargoHandling(playerUnitName, groupName)
     CargoStatus[groupName] = 0
   end
   -- TODO Tracking landed status of a unit could get precarious. But using the menu system alone it is hard to determine which unit has hit the button. This is done at the group level largely.
-  -- 
+  --
 end
 --#endRegion
 
@@ -1052,7 +1057,8 @@ local function handlePlayerOccupySlot(event)
       env.info("Player spawning in theater " .. theaterName)
       if CurrentState.TheaterHealth[theaterName].Coalition ~= "blue" then
         --if not controlled by blue, destroy
-        trigger.action.outTextForGroup(event.initiator:getGroup():getID(), "Cannot spawn in zone that is not controlled by blue.", 10)
+        trigger.action.outTextForGroup(event.initiator:getGroup():getID(),
+          "Cannot spawn in zone that is not controlled by blue.", 10)
         event.initiator:destroy()
         env.info("Player " ..
           playerName .. " tried to spawn at " .. theaterName .. " which is not currently controlled by blue coalition.")
@@ -1197,7 +1203,6 @@ local function HandleWorldEvents(event)
   if event.id == world.event.S_EVENT_UNIT_LOST then
     handleUnitLostEvent(event)
   end
-
 end
 
 mist.addEventHandler(HandleWorldEvents)
@@ -1241,8 +1246,8 @@ local function showAttackSchedule()
   MESSAGE:New(messageString, 20):ToAll()
 end
 
-intelMenu = MENU_COALITION:New( coalition.side.BLUE, "Intelligence" )
-MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Get Current Attacks Planned", intelMenu, showAttackSchedule )
+intelMenu = MENU_COALITION:New(coalition.side.BLUE, "Intelligence")
+MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Get Current Attacks Planned", intelMenu, showAttackSchedule)
 --endregion
 
 --#region Setup Skynet

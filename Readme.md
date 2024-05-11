@@ -32,7 +32,22 @@ Testing can be achieved locally by simply running the mission. Note, if you don'
 ### Steps on a new map
 
 Make sure to not be running the mission while editin the config file. It will get periodically overwritten. Even if the mission is paused it may have a stale version of the config in memory that it will overwrite your changes with.
+ - Create Template Vehicles (13 groups)
+	- template-red-cas
+	- template-red-heloConvoy
+	- template-blue-heloConvoy
+	- template-red-strike
+	- template-red-sead
+	- template-red-planeConvoy
+	- template-blue-planeConvoy
+	- template-red-truckConvoy
+	- template-blue-truckConvoy
+	- template-red-armor
+	- template-red-artillery
+	- template-red-shipConvoy
+	- template-blue-shipConvoy
 
+ - Add Scripts to initialization trigger
  - Create zones in all of the appropriate areas of the map. Add them to the theater list in the config file using
 ```
 "ZoneName": {
@@ -66,6 +81,4 @@ Make sure to not be running the mission while editin the config file. It will ge
  - Add high value targets
  - Check scenery objects that should count as industry against the TargetValues file. See video for help.
 
- assert(loadfile("C:\\Users\\robg\\Documents\\GitHub\\JTF111DynamicServerClient\\JTF111DynamicServerClient\\JTF111DynamicServerClient\\Lua\\OperationBurningMirage.lua"))()
-
- assert(loadfile("C:\\Users\\robg\\Documents\\GitHub\\dcs_scripting\\whackamole.lua"))()
+ assert(loadfile("C:\\Users\\robg\\Documents\\GitHub\\DCS-OperationBurningMirage\\OperationBurningMirage.lua"))()
