@@ -62,6 +62,12 @@ Make sure to not be running the mission while editin the config file. It will ge
 	- template-blue-shipConvoy
 
  - Add Scripts to initialization trigger
+	- Mist
+	- Moose
+	- Skynet
+	- Splashdamage
+	- BurndingMirage
+
  - Create zones in all of the appropriate areas of the map. Add them to the theater list in the config file using
 ```
 "ZoneName": {
@@ -87,7 +93,7 @@ Make sure to not be running the mission while editin the config file. It will ge
 	"Waypoints": []
   },
 ```
-	     - Explain reversal
+
  - Add player cold starts
  - Setup FARPs
  - Add tankers
@@ -101,4 +107,4 @@ TODO -
  - Add scenery objects to target database for Marianas
  - Fix plane starts
  - Fix ground based missions
-
+ - Explain reversal
