@@ -187,7 +187,7 @@ local function SpawnPlaneConvoy(arguments)
   local templateName = "template-" .. coalition .. "-planeConvoy"
   local spawnZone = ZONE:New(spawnTheater)
   if spawnZone == nil then
-    env.warning("Unable to find spawn zone for convoy " .. groupName)
+    -- env.warning("Unable to find spawn zone for convoy " .. groupName)
     return
   end
   local vec = spawnZone:GetPointVec3()
@@ -217,13 +217,13 @@ local function SpawnHeloConvoy(coalition, sourceTheater, destinationTheater)
 
   local spawnZone = ZONE:New(landingZone1)
   if spawnZone == nil then
-    env.warning("Unable to find spawn zone for convoy " .. groupName)
-      --There was no explicit landing zone defined. Use the zone itself.
-      spawnZone = ZONE:New(sourceTheater)
-      if spawnZone == nil then
-        --If we don't find the primary zone either this probably isn't on the right map.
-        return
-      end
+    -- env.warning("Unable to find spawn zone for convoy " .. groupName)
+    --There was no explicit landing zone defined. Use the zone itself.
+    spawnZone = ZONE:New(sourceTheater)
+    if spawnZone == nil then
+      --If we don't find the primary zone either this probably isn't on the right map.
+      return
+    end
   end
   local vec = spawnZone:GetPointVec3()
   local spawn_coordinate = COORDINATE:NewFromVec3(vec)
@@ -235,10 +235,28 @@ local function SpawnHeloConvoy(coalition, sourceTheater, destinationTheater)
       :OnSpawnGroup(
         function(SpawnGroup)
           local zone1 = ZONE:New(landingZone1)
+          if zone1 == nil then
+            -- env.warning("Unable to find spawn zone for convoy " .. groupName)
+            --There was no explicit landing zone defined. Use the zone itself.
+            zone1 = ZONE:New(sourceTheater)
+            if zone1 == nil then
+              --If we don't find the primary zone either this probably isn't on the right map.
+              return
+            end
+          end
           local zoneVec1 = zone1:GetPointVec3()
           local coordinate1 = COORDINATE:NewFromVec3(zoneVec1)
 
           local zone2 = ZONE:New(landingZone2)
+          if zone2 == nil then
+            -- env.warning("Unable to find spawn zone for convoy " .. groupName)
+            --There was no explicit landing zone defined. Use the zone itself.
+            zone2 = ZONE:New(destinationTheater)
+            if zone2 == nil then
+              --If we don't find the primary zone either this probably isn't on the right map.
+              return
+            end
+          end
           local zoneVec2 = zone2:GetPointVec3()
           local coordinate2 = COORDINATE:NewFromVec3(zoneVec2)
 
@@ -261,13 +279,13 @@ local function SpawnTruckConvoy(coalition, sourceTheater, destinationTheater)
 
   local zone1 = ZONE:New(landingZone1)
   if zone1 == nil then
-    env.warning("Unable to find spawn zone for convoy " .. groupName)
-      --There was no explicit landing zone defined. Use the zone itself.
-      zone1 = ZONE:New(sourceTheater)
-      if zone1 == nil then
-        --If we don't find the primary zone either this probably isn't on the right map.
-        return
-      end
+    -- env.warning("Unable to find spawn zone for convoy " .. groupName)
+    --There was no explicit landing zone defined. Use the zone itself.
+    zone1 = ZONE:New(sourceTheater)
+    if zone1 == nil then
+      --If we don't find the primary zone either this probably isn't on the right map.
+      return
+    end
   end
   local zoneVec1 = zone1:GetPointVec3()
   local coordinate1 = COORDINATE:NewFromVec3(zoneVec1)
@@ -280,9 +298,9 @@ local function SpawnTruckConvoy(coalition, sourceTheater, destinationTheater)
         function(SpawnGroup)
           local zone2 = ZONE:New(landingZone2)
           if zone2 == nil then
-            env.warning("Unable to find destination zone for convoy " .. groupName)
-              --There was no explicit landing zone defined. Use the zone itself.
-              zone2 = ZONE:New(destinationTheater)
+            -- env.warning("Unable to find destination zone for convoy " .. groupName)
+            --There was no explicit landing zone defined. Use the zone itself.
+            zone2 = ZONE:New(destinationTheater)
           end
           local zoneVec2 = zone2:GetPointVec3()
           local coordinate2 = COORDINATE:NewFromVec3(zoneVec2)
@@ -339,7 +357,7 @@ local function spawnSeadMission(arguments)
   local sourceTheater = arguments.sourceTheater
   local destinationTheater = arguments.destinationTheater
 
-  env.info("Scheduling sead package from " .. sourceTheater .. " with delay " .. initialDelay .. ".")
+  env.info("Scheduling sead package from " .. sourceTheater .. ".")
 
   local zone1 = ZONE:New(sourceTheater)
   local zoneVec1 = zone1:GetPointVec3()
@@ -379,8 +397,11 @@ end
 --TODO - Warn everyone of strikes?
 --TODO - Target HVTs and convoys?
 
-local function spawnStrikeMission(sourceTheater, destinationTheater, initialDelay)
-  env.info("Scheduling strike package from " .. sourceTheater)
+local function spawnStrikeMission(arguments)
+  local sourceTheater = arguments.sourceTheater
+  local destinationTheater = arguments.destinationTheater
+
+  env.info("Scheduling strike package from " .. sourceTheater .. ".")
   local groupName = "strike-" .. sourceTheater .. "-" .. destinationTheater
   local templateName = "template-red-strike"
   local strikeZone = destinationTheater .. "-strike"
@@ -885,34 +906,37 @@ if jsonStateContent then
   local attackingTheaters = {} --This will be used to report on the missions to the user and prevent one theater from launching too many different attacks.
   --Implement zone attack logic
   for _, theaterToAttack in ipairs(theatersToAttack) do
-    env.info("Planning attack on " .. theaterToAttack)
-    -- Find a suitable zone to attack this one.
-    for attackingTheater, zone in pairs(MapTheaters) do
-      -- Not a very efficient approach but there aren't a lot of ways to deal with dynamic lists.
-      local theaterAlreadyAttacking = false
-      for alreadyAttacking, alreadyBeingAttacked in pairs(attackingTheaters) do --lawd the naming
-        if attackingTheater == alreadyAttacking then
-          theaterAlreadyAttacking = true
-          env.info(attackingTheater .. " is already attacking " .. alreadyBeingAttacked)
-          break
-        end
-      end
-      --This theater is already attacking a different theater. For now lets limit to one mission per.
-      if not theaterAlreadyAttacking then
-        -- env.info(attackingTheater .. " is a candidate.")
-        if CurrentState.TheaterHealth[attackingTheater].Coalition == "red" and CurrentState.TheaterHealth[attackingTheater].Health / CurrentState.TheaterHealth[attackingTheater].MaxHealth > .25 then
-          --This zone should attack if it can.
-          if CurrentState.TheaterHealth[attackingTheater].Airport then
-            --TODO If > 30 miles away, spawn a fixed wing attack flight. If < 30 miles spawn a helo attack flight.
-            local delay = math.random(10, 120) * 60
-            timer.scheduleFunction(spawnSeadMission,
-              { attackingTheater = attackingTheater, theaterToAttack = theaterToAttack }, timer.getTime() + delay)
-            timer.scheduleFunction(spawnStrikeMission,
-              { attackingTheater = attackingTheater, theaterToAttack = theaterToAttack }, timer.getTime() + delay)
-            attackingTheaters[attackingTheater] = theaterToAttack
-            env.info("New air attack planned. " .. attackingTheater .. ":" .. theaterToAttack)
-            AttackSchedule[attackingTheater] = theaterToAttack
+    local zone1 = ZONE:New(theaterToAttack .. "-strike")
+    if (zone1 ~= nil) then
+      env.info("Planning attack on " .. theaterToAttack)
+      -- Find a suitable zone to attack this one.
+      for attackingTheater, zone in pairs(MapTheaters) do
+        -- Not a very efficient approach but there aren't a lot of ways to deal with dynamic lists.
+        local theaterAlreadyAttacking = false
+        for alreadyAttacking, alreadyBeingAttacked in pairs(attackingTheaters) do --lawd the naming
+          if attackingTheater == alreadyAttacking then
+            theaterAlreadyAttacking = true
+            env.info(attackingTheater .. " is already attacking " .. alreadyBeingAttacked)
             break
+          end
+        end
+        --This theater is already attacking a different theater. For now lets limit to one mission per.
+        if not theaterAlreadyAttacking then
+          -- env.info(attackingTheater .. " is a candidate.")
+          if CurrentState.TheaterHealth[attackingTheater].Coalition == "red" and CurrentState.TheaterHealth[attackingTheater].Health / CurrentState.TheaterHealth[attackingTheater].MaxHealth > .25 then
+            --This zone should attack if it can.
+            if CurrentState.TheaterHealth[attackingTheater].Airport then
+              --TODO If > 30 miles away, spawn a fixed wing attack flight. If < 30 miles spawn a helo attack flight.
+              local delay = math.random(10, 120) * 60
+              timer.scheduleFunction(spawnSeadMission,
+                { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay)
+              timer.scheduleFunction(spawnStrikeMission,
+                { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay + 120)
+              attackingTheaters[attackingTheater] = theaterToAttack
+              env.info("New air attack planned. " .. attackingTheater .. ":" .. theaterToAttack .. " : " .. delay)
+              AttackSchedule[attackingTheater] = theaterToAttack
+              break
+            end
           end
         end
       end
@@ -1010,10 +1034,12 @@ function UnloadCargo(groupName)
   end
 
   CurrentState.TheaterHealth[LandedStatus[groupName]].Health = CurrentState.TheaterHealth[LandedStatus[groupName]]
-  .Health + CargoStatus[groupName]                                                                                                                 --TODO: Different capacities by aircraft type.
+      .Health +
+      CargoStatus
+      [groupName]                  --TODO: Different capacities by aircraft type.
   if CurrentState.TheaterHealth[LandedStatus[groupName]].Health > CurrentState.TheaterHealth[LandedStatus[groupName]].MaxHealth then
     CurrentState.TheaterHealth[LandedStatus[groupName]].Health = CurrentState.TheaterHealth[LandedStatus[groupName]]
-    .MaxHealth
+        .MaxHealth
   end
 
   CargoStatus[groupName] = 0

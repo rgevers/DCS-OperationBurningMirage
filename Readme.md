@@ -108,3 +108,8 @@ TODO -
  - Fix plane starts
  - Fix ground based missions
  - Explain reversal
+ - Remove solar panels from marianas
+ - Add AAA and Infantry, marianas
+ - Test range restrictions
+ - Add FAC(A) Support
+ - Add CAP missions
