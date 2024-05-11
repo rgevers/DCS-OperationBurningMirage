@@ -97,4 +97,8 @@ Make sure to not be running the mission while editin the config file. It will ge
 
 assert(loadfile("C:\\Users\\robg\\Documents\\GitHub\\DCS-OperationBurningMirage\\OperationBurningMirage.lua"))()
 
+TODO - 
+ - Add scenery objects to target database for Marianas
+ - Fix plane starts
+ - Fix ground based missions
 

@@ -89,14 +89,14 @@ env.info("Initializing Burning Mirage")
 if (releaseVersion == 1) then
   StateFilePath = lfs.writedir() .. "Missions/Saves/BurningMirage_State.json"
 else
-  StateFilePath = "C:/Users/robg/Documents/GitHub/dcs_scripting/BurningMirage_State.json"
+  StateFilePath = "C:/Users/robg/Documents/GitHub/DCS-OperationBurningMirage/BurningMirage_State.json"
 end
 env.info("State Path: " .. StateFilePath)
 
 if (releaseVersion == 1) then
   TargetValuesFilePath = lfs.writedir() .. "Missions/Saves/BurningMirage_TargetValues.json"
 else
-  TargetValuesFilePath = "C:/Users/robg/Documents/GitHub/dcs_scripting/BurningMirage_TargetValues.json"
+  TargetValuesFilePath = "C:/Users/robg/Documents/GitHub/DCS-OperationBurningMirage/BurningMirage_TargetValues.json"
 end
 env.info("State Path: " .. TargetValuesFilePath)
 --#endregion
@@ -218,7 +218,12 @@ local function SpawnHeloConvoy(coalition, sourceTheater, destinationTheater)
   local spawnZone = ZONE:New(landingZone1)
   if spawnZone == nil then
     env.warning("Unable to find spawn zone for convoy " .. groupName)
-    return
+      --There was no explicit landing zone defined. Use the zone itself.
+      spawnZone = ZONE:New(sourceTheater)
+      if spawnZone == nil then
+        --If we don't find the primary zone either this probably isn't on the right map.
+        return
+      end
   end
   local vec = spawnZone:GetPointVec3()
   local spawn_coordinate = COORDINATE:NewFromVec3(vec)
@@ -255,6 +260,15 @@ local function SpawnTruckConvoy(coalition, sourceTheater, destinationTheater)
   local templateName = "template-" .. coalition .. "-truckConvoy"
 
   local zone1 = ZONE:New(landingZone1)
+  if zone1 == nil then
+    env.warning("Unable to find spawn zone for convoy " .. groupName)
+      --There was no explicit landing zone defined. Use the zone itself.
+      zone1 = ZONE:New(sourceTheater)
+      if zone1 == nil then
+        --If we don't find the primary zone either this probably isn't on the right map.
+        return
+      end
+  end
   local zoneVec1 = zone1:GetPointVec3()
   local coordinate1 = COORDINATE:NewFromVec3(zoneVec1)
 
@@ -265,6 +279,11 @@ local function SpawnTruckConvoy(coalition, sourceTheater, destinationTheater)
       :OnSpawnGroup(
         function(SpawnGroup)
           local zone2 = ZONE:New(landingZone2)
+          if zone2 == nil then
+            env.warning("Unable to find destination zone for convoy " .. groupName)
+              --There was no explicit landing zone defined. Use the zone itself.
+              zone2 = ZONE:New(destinationTheater)
+          end
           local zoneVec2 = zone2:GetPointVec3()
           local coordinate2 = COORDINATE:NewFromVec3(zoneVec2)
 
@@ -283,6 +302,10 @@ local function SpawnShipConvoy(coalition, sourceTheater, destinationTheater)
   local templateName = "template-" .. coalition .. "-shipConvoy" -- TODO - Make resilient via warning if zone not found.
 
   local zone1 = ZONE:New(landingZone1)
+  if zone1 == nil then
+    --If we don't find the ship zone this probably isn't the right map. Skip it.
+    return
+  end
   local zoneVec1 = zone1:GetPointVec3()
   local coordinate1 = COORDINATE:NewFromVec3(zoneVec1)
   local wp1 = coordinate1:WaypointNaval(26)
