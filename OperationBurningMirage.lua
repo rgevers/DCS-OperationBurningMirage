@@ -78,7 +78,9 @@ end
 
 --#region File Management
 local debugMode = 0
-local releaseVersion = 0 --TODO - Base this off of a trigger set in the script when making the file the _rc version
+
+local releaseFlag = trigger.misc.getUserFlag("1")
+local releaseVersion = releaseFlag -- 0 by default. 1 for release version (_rc file)
 
 local JSON = (loadfile('Scripts/JSON.lua'))()
 BASE:TraceAll(true)
@@ -177,11 +179,18 @@ local function SpawnPlaneConvoy(arguments)
   local coalition = arguments.coalition
   local sourceTheater = arguments.sourceTheater
   local destinationTheater = arguments.destinationTheater
+  local sourceAirport = arguments.sourceAirport --TODO - Off Map?
+  local destinationAirport = arguments.destinationAirport
 
   local groupName = "conv-" .. sourceTheater .. "-" .. destinationTheater
-  --If source theater has an airport spawn low, else spawn high (cross map is at-altitude already)
-  --Fly to destination, land, takeoff (maybe) and return?
-  --Add departure delay
+
+  VehicleCargoSet = SET_CARGO:New():FilterTypes("Infantry"):FilterStart()
+
+  local WorkerGroup = GROUP:FindByName("testCargo-1")                                    --TODO - Spawn these at source airbase
+  local WorkersCargo = CARGO_GROUP:New(WorkerGroup, "Infantry", "testCargo-1", 5000, 35) --TODO - Naming?
+  WorkersCargo:SetWeight(500)
+
+
   local spawnTheater = sourceTheater .. "-convoy"
   local landingZone = destinationTheater .. "-convoy"
   local templateName = "template-" .. coalition .. "-planeConvoy"
@@ -197,13 +206,21 @@ local function SpawnPlaneConvoy(arguments)
       :InitRandomizeUnits(true, 500, 50)
       :InitRepeatOnEngineShutDown()
       :OnSpawnGroup(
-        function(SpawnGroup)
-          local zone2 = ZONE:New(landingZone)
-          local zoneVec2 = zone2:GetPointVec3()
-          local coordinate2 = COORDINATE:NewFromVec3(zoneVec2)
-          Fg = FLIGHTGROUP:New(SpawnGroup)
-          Mission = AUFTRAG:NewLANDATCOORDINATE(coordinate2:GetCoordinate())
-          Fg:AddMission(Mission)
+        function(Airplane)
+          CargoAirplane = AI_CARGO_AIRPLANE:New(Airplane, VehicleCargoSet)
+          PickupAirbase = AIRBASE:FindByName(sourceAirport)
+          DeployAirbases = { AIRBASE:FindByName(destinationAirport) }
+          CargoAirplane:Pickup(PickupAirbase:GetCoordinate())
+
+          function CargoAirplane:OnAfterLoaded(Airplane, From, Event, To, Cargo)
+            CargoAirplane:__Deploy(0.2, DeployAirbases[math.random(#DeployAirbases)]:GetCoordinate(),
+              math.random(500, 750))
+          end
+
+          --function CargoAirplane:OnAfterUnloaded( Airplane, From, Event, To, Cargo )
+          function CargoAirplane:OnAfterDeployed(Airplane, From, Event, To, DeployZone)
+            CargoAirplane:__Pickup(0.2, PickupAirbase:GetCoordinate(), math.random(500, 750))
+          end
         end
       )
       :Spawn() -- TODO why won't spawn scheduled work here?
@@ -349,7 +366,7 @@ local function SpawnShipConvoy(coalition, sourceTheater, destinationTheater)
           SpawnGroup:PushTask(shipTask, 0)
         end
       )
-      :InitLimit(2, 0)
+      :InitLimit(2, 1)
       :Spawn()
 end
 
@@ -390,7 +407,7 @@ local function spawnSeadMission(arguments)
           strikeGrp:AddMission(strikeAuftrag)
         end
       )
-      :InitLimit(2, 0)
+      :InitLimit(2, 1)
       :Spawn()
 end
 
@@ -842,10 +859,12 @@ local function ProcessConnections(connections)
 
       if connection.Type == "PLANE" then
         local delay = math.random(10, 120) * 60
+        delay = 30 --TODO Just for testing
         timer.scheduleFunction(SpawnPlaneConvoy,
-          { coalition = coalition, sourceTheater = sourceTheater, destinationTheater = destinationTheater },
+          { coalition = coalition, sourceTheater = sourceTheater, destinationTheater = destinationTheater, sourceAirport =
+          CurrentState.TheaterHealth[sourceTheater].Airport, destinationAirport = CurrentState.TheaterHealth
+          [destinationTheater].Airport },
           timer.getTime() + delay)
-        -- SpawnPlaneConvoy(coalition, sourceTheater, destinationTheater, delay)
       end
     end
     --Add connection to the map
@@ -927,7 +946,7 @@ if jsonStateContent then
             --This zone should attack if it can.
             if CurrentState.TheaterHealth[attackingTheater].Airport then
               --TODO If > 30 miles away, spawn a fixed wing attack flight. If < 30 miles spawn a helo attack flight.
-              local delay = math.random(10, 120) * 60
+              local delay = math.random(20, 300) * 60
               timer.scheduleFunction(spawnSeadMission,
                 { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay)
               timer.scheduleFunction(spawnStrikeMission,
@@ -1036,7 +1055,7 @@ function UnloadCargo(groupName)
   CurrentState.TheaterHealth[LandedStatus[groupName]].Health = CurrentState.TheaterHealth[LandedStatus[groupName]]
       .Health +
       CargoStatus
-      [groupName]                  --TODO: Different capacities by aircraft type.
+      [groupName] --TODO: Different capacities by aircraft type.
   if CurrentState.TheaterHealth[LandedStatus[groupName]].Health > CurrentState.TheaterHealth[LandedStatus[groupName]].MaxHealth then
     CurrentState.TheaterHealth[LandedStatus[groupName]].Health = CurrentState.TheaterHealth[LandedStatus[groupName]]
         .MaxHealth
