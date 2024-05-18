@@ -174,7 +174,6 @@ local function ActivateGroup(GroupName)
   end
 end
 
---TODO This isn't working very well either. Need a different mission goal than "LANDATCOORDINATE" which seems to only work for Helos.
 local function SpawnPlaneConvoy(arguments)
   local coalition = arguments.coalition
   local sourceTheater = arguments.sourceTheater
@@ -861,9 +860,15 @@ local function ProcessConnections(connections)
         local delay = math.random(10, 120) * 60
         delay = 30 --TODO Just for testing
         timer.scheduleFunction(SpawnPlaneConvoy,
-          { coalition = coalition, sourceTheater = sourceTheater, destinationTheater = destinationTheater, sourceAirport =
-          CurrentState.TheaterHealth[sourceTheater].Airport, destinationAirport = CurrentState.TheaterHealth
-          [destinationTheater].Airport },
+          {
+            coalition = coalition,
+            sourceTheater = sourceTheater,
+            destinationTheater = destinationTheater,
+            sourceAirport =
+                CurrentState.TheaterHealth[sourceTheater].Airport,
+            destinationAirport = CurrentState.TheaterHealth
+                [destinationTheater].Airport
+          },
           timer.getTime() + delay)
       end
     end
@@ -1143,15 +1148,16 @@ end
 
 local function handleKillEvent(event)
   -- env.info("Kill Event Handled: ")
-  if (Object.getCategory(event.target) == Object.Category.SCENERY) then -- Wow is this stuff woefully underdocumented in the "official" docs.
+  -- env.info("Type: " .. Object.getCategory(event.target))
+  if (Object.getCategory(event.target) == Object.Category.SCENERY or Object.getCategory(event.target) == Object.Category.STATIC) then -- Wow is this stuff woefully underdocumented in the "official" docs.
     local scenery = event.target
     -- env.info("Scenery Kill Event Handled")
     local type = string.lower(scenery:getTypeName())
     local theaterName = nil
-
+    env.info("Kill Type: " .. type)
     for key, theaterZone in pairs(MapTheaters) do
       if (theaterZone:IsCoordinateInZone(COORDINATE:NewFromVec3(scenery:getPoint()))) then
-        -- env.info("Kill was in zone: " .. key)
+        env.info("Kill was in zone: " .. key)
         theaterName = key
       end
     end
@@ -1205,7 +1211,8 @@ local function handleUnitLostEvent(event)
     end
     local found = false
     for zoneName, zone in pairs(MapTheaters) do
-      if starts_with(unitName, string.lower(zoneName)) or starts_with(unitName, string.lower("sam-blue-" .. zoneName)) or starts_with(unitName, string.lower("sam-red-" .. zoneName)) then
+      if starts_with(unitName, string.lower(zoneName)) or starts_with(unitName, string.lower("sam-blue-" .. zoneName)) or starts_with(unitName, string.lower("sam-red-" .. zoneName)) or starts_with(unitName, string.lower("hvt-blue-" .. zoneName)) or starts_with(unitName, string.lower("hvt-red-" .. zoneName)) then
+        env.info("Unit hit in zone: " .. zoneName)
         --This unit is associated with the selected zone.
         CurrentState.TheaterHealth[zoneName].Health = CurrentState.TheaterHealth[zoneName].Health - score
         if CurrentState.TheaterHealth[zoneName].Health < 0 then
@@ -1282,7 +1289,7 @@ function DoBackgroundWork(ourArgument, time)
   --Save state
   local currentTIme = os.time(os.date("!*t"))
   CurrentState.LastModified = currentTIme
-  env.info(JSON:encode(CurrentState))
+  -- env.info(JSON:encode(CurrentState))
   write_file(StateFilePath, JSON:encode(CurrentState))
   --Display summary
   local stringOutput = "Damage Summary: \n"

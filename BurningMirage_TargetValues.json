@@ -77,5 +77,15 @@
     "workshop_02": 75,
     "infantry ak": 25,
     "zil-135": 100,
-    "nats_radar_01": 150
+    "nats_radar_01": 150,
+    "military_installation_5": 150,
+    "rota_airport_small_building": 100,
+    "tube_pile": 25,
+    "industrial_container_01": 25,
+    "industrial_container_02": 25,
+    "industrial_container_03": 25,
+    "airfield_building_tech_d": 50,
+    "industrial_shed_01": 50,
+    "outpost_hd": 100,
+    "m92_sandbag_13": 50
 }
