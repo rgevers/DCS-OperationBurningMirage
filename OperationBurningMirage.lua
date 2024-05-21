@@ -4,6 +4,9 @@ KillSummary = {}
 MapTheaters = {}
 CurrentState = {}
 AttackSchedule = {}
+AttackTime = {}
+GroundAttackSchedule = {}
+GroundAttackTime = {}
 
 MANUFACTURE_AMOUNT = 200
 RESUPPLY_AMOUNT = 100
@@ -442,61 +445,48 @@ local function spawnStrikeMission(arguments)
       :SpawnScheduled(initialDelay)
 end
 
---TODO - Also doesn't work
-local function spawnArmorMission(sourceTheater, targetGroup, initialDelay)
+local function spawnArmorMission(arguments)
+  local sourceTheater = arguments.sourceTheater
+  local destinationTheater = arguments.destinationTheater
   env.info("Scheduling armor package from " .. sourceTheater)
-  local groupName = "armor-" .. sourceTheater .. "-" .. targetGroup:getName()
+
+  local groupName = "armor-" .. sourceTheater .. "-" .. destinationTheater
+  local landingZone1 = sourceTheater .. "-convoy"
+  local landingZone2 = destinationTheater .. "-strike" -- TODO - Make resilient via warning if zone not found.
   local templateName = "template-red-armor"
 
-  local zone1 = ZONE:New(sourceTheater)
-  local zoneVec1 = zone1:GetPointVec3()
-  local coordinate1 = COORDINATE:NewFromVec3(zoneVec1)
-  --TODO - Cancel strike if sead isn't complete yet?
-  SPAWN:NewWithAlias(templateName, groupName)
-      :InitPositionCoordinate(coordinate1)
-      :OnSpawnGroup(
-        function(spawnGroup)
-          spawnGroup:OptionRTBAmmo(2147485694)
-          local strikeGrp = ARMYGROUP:New(spawnGroup)
-          -- strikeGrp:AddMission(AUFTRAG:NewGROUNDATTACK(targetGroup)) -- attempt to call method 'IsInstanceOf' (a nil value)
-        end
-      )
-      :InitLimit(4, 0)
-      :SpawnScheduled(initialDelay)
-end
-
---TODO - Doesn't work?
-local function spawnArtilleryMission(sourceTheater, destinationTheater, initialDelay)
-  if true then
-    return -- TODO -shortcircuiting this method for now. Will come back when I can fix it.
+  local zone1 = ZONE:New(landingZone1)
+  if zone1 == nil then
+    -- env.warning("Unable to find spawn zone for convoy " .. groupName)
+    --There was no explicit landing zone defined. Use the zone itself.
+    zone1 = ZONE:New(sourceTheater)
+    if zone1 == nil then
+      --If we don't find the primary zone either this probably isn't on the right map.
+      return
+    end
   end
-  env.info("Scheduling artillery package from " .. sourceTheater)
-  local groupName = "artillery-" .. sourceTheater .. "-" .. destinationTheater
-  local templateName = "template-red-artillery"
-  local strikeZone = destinationTheater .. "-strike"
-
-  local zone1 = ZONE:New(sourceTheater .. "-artillery")
   local zoneVec1 = zone1:GetPointVec3()
   local coordinate1 = COORDINATE:NewFromVec3(zoneVec1)
-  --TODO - Cancel strike if sead isn't complete yet?
-  SPAWN:NewWithAlias(templateName, groupName)
+
+  spawnedGroup = SPAWN:NewWithAlias(templateName, groupName)
       :InitPositionCoordinate(coordinate1)
+      :InitRandomizeUnits(true, 200, 50)
+      :InitRepeatOnEngineShutDown()
       :OnSpawnGroup(
-        function(spawnGroup)
-          spawnGroup:OptionRTBAmmo(2147485694)
-          local strikeZone = ZONE:New(strikeZone)
-          -- local destZone = ZONE:New(destinationTheater .. "-artillery")
-          -- local destCoord = destZone:GetRandomCoordinate()
-          local strikeCoordinate = strikeZone:GetRandomCoordinate()
-          local strikeGrp = ARMYGROUP:New(spawnGroup)
-          --armygroup:AddWaypoint(ZONE:New("Zone Palmyra Airport"):GetCoordinate(), 30, nil, ENUMS.Formation.Vehicle.OnRoad)--
-          -- strikeGrp:RouteToMission(AUFTRAG:NewARTY(strikeCoordinate)) --({destCoord})
-          --ARMYGROUP:AddTaskWaypoint(task, Waypoint, description, prio, duration)
-          strikeGrp:AddMission(AUFTRAG:NewARTY(strikeCoordinate)) -- Works only if they are already in range.
+        function(SpawnGroup)
+          local zone2 = ZONE:New(landingZone2)
+          if zone2 == nil then
+            -- env.warning("Unable to find destination zone for convoy " .. groupName)
+            --There was no explicit landing zone defined. Use the zone itself.
+            zone2 = ZONE:New(destinationTheater)
+          end
+          local zoneVec2 = zone2:GetPointVec3()
+          local coordinate2 = COORDINATE:NewFromVec3(zoneVec2)
+
+          SpawnGroup:RouteGroundOnRoad(coordinate2, 46) --TODO - Delay start time? Randomize more?
         end
       )
-      :InitLimit(2, 0)
-      :SpawnScheduled(120, 0.5, initialDelay)
+      :Spawn()
 end
 
 local function activateGroupByHealth(groupSetName, groupList, groupListSize, healthPercent, desiredSize, alwaysOne)
@@ -927,8 +917,7 @@ if jsonStateContent then
 
   -- Iterate through Connections
   local theatersToAttack = ProcessConnections(CurrentState.Connections)
-  local attackingTheaters = {} --This will be used to report on the missions to the user and prevent one theater from launching too many different attacks.
-  --Implement zone attack logic
+  --Schedule Air Attacks
   for _, theaterToAttack in ipairs(theatersToAttack) do
     local zone1 = ZONE:New(theaterToAttack .. "-strike")
     if (zone1 ~= nil) then
@@ -937,11 +926,11 @@ if jsonStateContent then
       for attackingTheater, zone in pairs(MapTheaters) do
         -- Not a very efficient approach but there aren't a lot of ways to deal with dynamic lists.
         local theaterAlreadyAttacking = false
-        for alreadyAttacking, alreadyBeingAttacked in pairs(attackingTheaters) do --lawd the naming
+        for alreadyAttacking, alreadyBeingAttacked in pairs(AttackSchedule) do --lawd the naming
           if attackingTheater == alreadyAttacking then
             theaterAlreadyAttacking = true
             env.info(attackingTheater .. " is already attacking " .. alreadyBeingAttacked)
-            break
+            break --Once we find it in the list of attacking theaters we don't have to keep looking.
           end
         end
         --This theater is already attacking a different theater. For now lets limit to one mission per.
@@ -951,45 +940,57 @@ if jsonStateContent then
             --This zone should attack if it can.
             if CurrentState.TheaterHealth[attackingTheater].Airport then
               --TODO If > 30 miles away, spawn a fixed wing attack flight. If < 30 miles spawn a helo attack flight.
-              local delay = math.random(20, 300) * 60
+              local delay = math.random(10, 300) * 60
               timer.scheduleFunction(spawnSeadMission,
                 { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay)
               timer.scheduleFunction(spawnStrikeMission,
                 { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay + 120)
-              attackingTheaters[attackingTheater] = theaterToAttack
               env.info("New air attack planned. " .. attackingTheater .. ":" .. theaterToAttack .. " : " .. delay)
               AttackSchedule[attackingTheater] = theaterToAttack
-              break
+              AttackTime[attackingTheater] = delay
+              break --Once we schedule an attack for this theater we don't need to schedule more.
             end
           end
         end
       end
     end
   end
-  --TODO - Reintroduce these when I can make them work. Should be in addition to primary zone attack logic above so plan to run the loop a second time.
-  --       else
-  --         --Make sure the distance is not too far.
-  --         --TODO - Sort by nearest?
-  --         --TODO - Create ground attacks. Go for convoys in this first version? or let them intercept convoys on the way to the attack?
-  --         env.info("New ground attack planned. " .. attackingTheater .. ":" .. theaterToAttack)
-  --         spawnArtilleryMission(attackingTheater, theaterToAttack, 0)
-  --         attackingTheaters[attackingTheater] = theaterToAttack
 
-  --         --In addition to attacking the theater, lets attack convoys supplying this theater.
-  --         for i, gp in pairs(coalition.getGroups(2)) do
-  --           local groupName = Group.getName(gp)
-  --           if contains(groupName, theaterToAttack) and starts_with(groupName, "conv-") then -- Don't have to worry about it being from this theater in the contains check
-  --             --This is a convoy from a theater to the one being attacked. Attack it too!
-  --             env.info("New convoy attack planned against " .. groupName .. ".")
-  --             spawnArmorMission(attackingTheater, gp, 0) --TODO - Specialize this based on convoy type.
-  --           end
-  --         end
-  --         break
-  --       end
-  --     end
-  --   end
-  -- end
-
+  --Schedule Ground Attacks
+  for _, theaterToAttack in ipairs(theatersToAttack) do
+    local zone1 = ZONE:New(theaterToAttack .. "-strike")
+    if (zone1 ~= nil) then
+      env.info("Planning attack on " .. theaterToAttack)
+      -- Find a suitable zone to attack this one.
+      for attackingTheater, zone in pairs(MapTheaters) do
+        -- Not a very efficient approach but there aren't a lot of ways to deal with dynamic lists.
+        local theaterAlreadyAttacking = false
+        for alreadyAttacking, alreadyBeingAttacked in pairs(GroundAttackSchedule) do --lawd the naming
+          if attackingTheater == alreadyAttacking then
+            theaterAlreadyAttacking = true
+            env.info(attackingTheater .. " is already attacking " .. alreadyBeingAttacked)
+            break --Once we find it in the list of attacking theaters we don't have to keep looking.
+          end
+        end
+        --This theater is already attacking a different theater. For now lets limit to one mission per.
+        if not theaterAlreadyAttacking then
+          -- env.info(attackingTheater .. " is a candidate.")
+          if CurrentState.TheaterHealth[attackingTheater].Coalition == "red" and CurrentState.TheaterHealth[attackingTheater].Health / CurrentState.TheaterHealth[attackingTheater].MaxHealth > .25 then
+            --This zone should attack if it can.
+            --Make sure the distance is not too far.
+            --TODO - Sort by nearest?
+            local delay = math.random(10, 300) * 60
+            timer.scheduleFunction(spawnArmorMission,
+              { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay)
+            env.info("New ground attack planned. " .. attackingTheater .. ":" .. theaterToAttack)
+            GroundAttackSchedule[attackingTheater] = theaterToAttack
+            GroundAttackTime[attackingTheater] = delay
+            break --Once we schedule an attack for this theater we don't need to schedule more.
+          end
+        end
+      end
+    end
+  end
 
   -- Spawn armor columns to attack convoys. Will pathing be hard here?
   -- Identify convoys supplying this zone and attack them as well.
@@ -1316,7 +1317,16 @@ timer.scheduleFunction(DoBackgroundWork, "", timer.getTime() + 30)
 local function showAttackSchedule()
   local messageString = "Currently Planned Attacks:\n"
   for source, target in pairs(AttackSchedule) do
-    messageString = messageString .. " " .. source .. " is attacking " .. target .. "\n"
+    messageString = messageString ..
+        " " ..
+        source ..
+        " is launching an air attack on " .. target .. " at " .. math.floor(AttackTime[source] / 60) .. " minutes after mission start.\n"
+  end
+  for source, target in pairs(GroundAttackSchedule) do
+    messageString = messageString ..
+        " " ..
+        source ..
+        " is launching a ground attack on " .. target .. " at " .. math.floor(GroundAttackTime[source] / 60) .. " minutes after mission start.\n"
   end
   MESSAGE:New(messageString, 20):ToAll()
 end
