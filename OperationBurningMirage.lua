@@ -441,8 +441,8 @@ local function spawnStrikeMission(arguments)
           strikeGrp:AddMission(strikeAuftrag)
         end
       )
-      :InitLimit(2, 0)
-      :SpawnScheduled(initialDelay)
+      :InitLimit(2, 1)
+      :Spawn()
 end
 
 local function spawnArmorMission(arguments)
@@ -767,6 +767,7 @@ local function RunDailySimulation()
       else
         edge.source = connection.DestinationTheater
         edge.destination = connection.SourceTheater
+        table.insert(redEdges, edge)
       end
     elseif CurrentState.TheaterHealth[connection.SourceTheater] == "blue" and CurrentState.TheaterHealth[connection.DestinationTheater] == "blue" then
       --If it is a blue edge
@@ -799,6 +800,9 @@ local function RunDailySimulation()
     end
   end
 
+  local currentTIme = os.time(os.date("!*t"))
+  CurrentState.LastModified = currentTIme
+  
   env.info("Final state: ")
   env.info(JSON:encode(CurrentState))
 end
@@ -940,7 +944,7 @@ if jsonStateContent then
             --This zone should attack if it can.
             if CurrentState.TheaterHealth[attackingTheater].Airport then
               --TODO If > 30 miles away, spawn a fixed wing attack flight. If < 30 miles spawn a helo attack flight.
-              local delay = math.random(10, 300) * 60
+              local delay = math.random(30, 800) * 60
               timer.scheduleFunction(spawnSeadMission,
                 { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay)
               timer.scheduleFunction(spawnStrikeMission,
@@ -979,7 +983,7 @@ if jsonStateContent then
             --This zone should attack if it can.
             --Make sure the distance is not too far.
             --TODO - Sort by nearest?
-            local delay = math.random(10, 300) * 60
+            local delay = math.random(30, 800) * 60
             timer.scheduleFunction(spawnArmorMission,
               { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay)
             env.info("New ground attack planned. " .. attackingTheater .. ":" .. theaterToAttack)
@@ -1073,10 +1077,10 @@ function UnloadCargo(groupName)
   trigger.action.setUnitInternalCargo(unit:getName(), 0)
 end
 
-local function activateCargoHandling(playerUnitName, groupName)
+local function activateCargoHandling(playerUnit, groupName)
   local group = GROUP:FindByName(groupName)
 
-  env.info("Activating cargo handling for: " .. playerUnitName .. " : " .. groupName)
+  env.info("Activating cargo handling for: " .. groupName)
   local managementMenu = MENU_GROUP:New(group, "Cargo Management")
   MENU_GROUP_COMMAND:New(group, "Load Cargo", managementMenu, LoadCargo, groupName)
   MENU_GROUP_COMMAND:New(group, "Unload Cargo", managementMenu, UnloadCargo, groupName)
@@ -1093,10 +1097,9 @@ end
 local function handleLandedEvent(event)
   env.info("Handling landed event.")
   local groupName = event.initiator:getGroup():getName()
+  env.info("Group: " .. groupName)
   local group = GROUP:FindByName(groupName)
   local playerUnit = group:GetFirstUnit()
-
-
 
   local theaterName = nil
   for key, theaterZone in pairs(MapTheaters) do
@@ -1108,11 +1111,17 @@ local function handleLandedEvent(event)
 
   -- MESSAGE:New(groupName .. " landed at " .. theaterName .. ".", 20):ToAll()
   LandedStatus[groupName] = theaterName
+
+  local unitType = event.initiator:getDesc()['typeName']
+  if cargoHandlingAllowed(unitType) then
+    activateCargoHandling(playerUnit, groupName)
+  end
 end
 
 local function handleTakeoffEvent(event)
   env.info("Handling takeoff event.")
   local groupName = event.initiator:getGroup():getName()
+  env.info("Group: " .. groupName)
   LandedStatus[groupName] = nil
 end
 
@@ -1137,12 +1146,11 @@ local function handlePlayerOccupySlot(event)
         env.info("Player " ..
           playerName .. " tried to spawn at " .. theaterName .. " which is not currently controlled by blue coalition.")
       end
-
-      local unitType = event.initiator:getDesc()['typeName']
-      if cargoHandlingAllowed(unitType) then
-        LandedStatus[groupName] = theaterName
-        activateCargoHandling(playerUnitName, groupName)
-      end
+      -- local unitType = event.initiator:getDesc()['typeName']
+      -- if cargoHandlingAllowed(unitType) then
+      --   LandedStatus[groupName] = theaterName
+      --   activateCargoHandling(playerUnitName, groupName)
+      -- end
     end
   end
 end
@@ -1288,8 +1296,6 @@ function DoBackgroundWork(ourArgument, time)
   env.info("Background loop executed.")
 
   --Save state
-  local currentTIme = os.time(os.date("!*t"))
-  CurrentState.LastModified = currentTIme
   -- env.info(JSON:encode(CurrentState))
   write_file(StateFilePath, JSON:encode(CurrentState))
   --Display summary
