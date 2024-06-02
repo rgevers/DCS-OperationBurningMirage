@@ -655,11 +655,11 @@ local function StepO()
     if zone.Health == 0 then
       if zone.Coalition == "red" then
         zone.Coalition = "blue"
-        zone.Health = 10 -- Prevent a zone from flipping back and forth each day in the absence of other activity.
+        zone.Health = 100 -- Prevent a zone from flipping back and forth each day in the absence of other activity.
         env.info("Zone " .. zoneName .. " captured by blue.")
       else
         zone.Coalition = "red"
-        zone.Health = 10
+        zone.Health = 100
         env.info("Zone " .. zoneName .. " captured by red.")
       end
     end
@@ -1156,11 +1156,19 @@ local function handlePlayerOccupySlot(event)
 end
 
 local function handleKillEvent(event)
-  -- env.info("Kill Event Handled: ")
-  -- env.info("Type: " .. Object.getCategory(event.target))
+  env.info("Kill Event Handled: ")
+  env.info("Type: " .. Object.getCategory(event.target))
   if (Object.getCategory(event.target) == Object.Category.SCENERY or Object.getCategory(event.target) == Object.Category.STATIC) then -- Wow is this stuff woefully underdocumented in the "official" docs.
     local scenery = event.target
-    -- env.info("Scenery Kill Event Handled")
+    local sceneryTypeName = scenery:getTypeName()
+    local sceneryName = scenery:getName()
+    if (sceneryName == nil) then
+      sceneryName = ""
+    end
+    if (sceneryTypeName == nil) then
+      sceneryTypeName = ""
+    end
+    env.info("Scenery Kill Event Handled: " .. sceneryTypeName .. " : " .. sceneryName)
     local type = string.lower(scenery:getTypeName())
     local theaterName = nil
     env.info("Kill Type: " .. type)
@@ -1266,6 +1274,7 @@ local function handleUnitLostEvent(event)
 end
 
 local function HandleWorldEvents(event)
+  env.info("Event Type: " .. event.id)
   --Player landed somewhere
   if event.id == world.event.S_EVENT_LAND then
     handleLandedEvent(event)
@@ -1280,7 +1289,7 @@ local function HandleWorldEvents(event)
     handlePlayerOccupySlot(event)
   end
 
-  if event.id == world.event.S_EVENT_KILL and event.weapon then
+  if event.id == world.event.S_EVENT_KILL then
     handleKillEvent(event)
   end
 
