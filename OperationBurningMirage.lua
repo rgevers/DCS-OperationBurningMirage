@@ -811,7 +811,7 @@ local function ProcessConnections(connections)
       end
     else
       --TODO Fixed wing cargo for cross-map usage
-      local delay = math.random(10, 480) * 60
+      local delay = math.random(1, 240) * 60
       if connection.Type == "HELO" then
         timer.scheduleFunction(SpawnHeloConvoy,
           {
