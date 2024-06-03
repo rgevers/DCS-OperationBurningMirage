@@ -35,7 +35,7 @@ local function DrawTheater(theater, health, coalition, coord, radius, theaterNam
     coord:CircleToAll(radius, -1, colorFactory, 1, colorFactory, .25, 0)
   end
   coord:CircleToAll(radius, -1, color, 1, color, .25, 0)
-  DrawTheaterHealth(theater, coord:Translate(radius*.75, 150), health, theaterName)
+  DrawTheaterHealth(theater, coord:Translate(radius * .75, 150), health, theaterName)
 end
 
 local function DrawConnection(sourceMCoord, destMCoord, coalition)
@@ -674,16 +674,9 @@ local function Step1(topologicalSort)
       for _, connection in ipairs(CurrentState.Connections) do
         local upstreamZone = nil
         local upstreamZoneName = nil
-        if connection.Reverse and zone.Coalition == "red" then
-          --If this is a reverseable connection and we find a valid pairing
-          if connection.SourceTheater == zoneName and CurrentState.TheaterHealth[connection.DestinationTheater].Coalition == "red" then
-            -- If we are supplying a red zone, the connection needs reversed, the source (destination) is our zone, and the destination (source) is also red
-            upstreamZone = CurrentState.TheaterHealth[connection.DestinationTheater]
-            upstreamZoneName = connection.DestinationTheater
-          end
-        elseif connection.DestinationTheater == zoneName and CurrentState.TheaterHealth[connection.SourceTheater].Coalition == zone.Coalition then
-          --Conenction is either not reversed, or it is but the coalition is blue. Do normal stuff.
-          upstreamZone = CurrentState.TheaterHealth[connection.SourceTheater]
+        if connection.DestinationTheater == zoneName and CurrentState.TheaterHealth[connection.SourceTheater].Coalition == zone.Coalition then
+          upstreamZone = CurrentState.TheaterHealth
+              [connection.SourceTheater] --TODO Clean up now that reversing isn't a thing.
           upstreamZoneName = connection.SourceTheater
         end
 
@@ -737,19 +730,11 @@ local function RunDailySimulation()
 
     if CurrentState.TheaterHealth[connection.SourceTheater] == "red" and CurrentState.TheaterHealth[connection.DestinationTheater] == "red" then
       --If it is a red edge
-      --If it is a red edge and would normally be reverse from the blue version, we don't have to reverse it now.
-      if connection.Reverse then
-        --Reverse the reverse
-        edge.source = connection.SourceTheater
-        edge.destination = connection.DestinationTheater
-      else
-        edge.source = connection.DestinationTheater
-        edge.destination = connection.SourceTheater
-        table.insert(redEdges, edge)
-      end
+      edge.source = connection.DestinationTheater
+      edge.destination = connection.SourceTheater
+      table.insert(redEdges, edge)
     elseif CurrentState.TheaterHealth[connection.SourceTheater] == "blue" and CurrentState.TheaterHealth[connection.DestinationTheater] == "blue" then
       --If it is a blue edge
-      --Reverse all of the edges
       edge.source = connection.DestinationTheater
       edge.destination = connection.SourceTheater
       table.insert(blueEdges, edge)
@@ -791,18 +776,9 @@ local function ProcessConnections(connections)
   local zonesToAttack = {}
 
   for _, connection in ipairs(connections) do
-    -- If the connection says it should be reversed if red, apply that reversal.
-    local connectionName = connection.SourceTheater ..
-        "-" ..
-        connection
-        .DestinationTheater -- Name of the connection should not be reversed.
-
+    local connectionName = connection.SourceTheater .. "-" .. connection.DestinationTheater
     local sourceTheater = connection.SourceTheater
     local destinationTheater = connection.DestinationTheater
-    if (CurrentState.TheaterHealth[sourceTheater].Coalition == "red" and connection.Reverse) then
-      sourceTheater = connection.DestinationTheater
-      destinationTheater = connection.SourceTheater
-    end
 
     local coalition = CurrentState.TheaterHealth[sourceTheater].Coalition
 
@@ -985,7 +961,7 @@ CargoStatus = {}
 LandedStatus = {}
 
 local function cargoHandlingAllowed(inUseType)
-  local allowedCargoTypes = { "UH-1H", "UH-60L" } -- TODO - Add Chinook
+  local allowedCargoTypes = { "UH-1H" } -- TODO - Add Chinook
   local unitType = inUseType
   for _, typeName in ipairs(allowedCargoTypes) do
     if typeName == unitType then
@@ -995,6 +971,7 @@ local function cargoHandlingAllowed(inUseType)
   return false
 end
 function LoadCargo(groupName)
+  local cargoHealth = 300
   local group = Group.getByName(groupName)
   local unit = group:getUnit(1)
   local mGroup = GROUP:FindByName(groupName) --Redundant but that's mixing mist and moose for you. Probably a better way.
@@ -1009,12 +986,12 @@ function LoadCargo(groupName)
     return
   end
 
-  if CurrentState.TheaterHealth[LandedStatus[groupName]].Health < 100 then
+  if CurrentState.TheaterHealth[LandedStatus[groupName]].Health < cargoHealth then
     MESSAGE:New(groupName .. " cannot load cargo. Zone has insufficient supplies.", 20):ToGroup(mGroup)
   end
 
   MESSAGE:New(groupName .. " loaded cargo at " .. LandedStatus[groupName] .. ".", 20):ToAll()
-  CargoStatus[groupName] = 100
+  CargoStatus[groupName] = cargoHealth
   trigger.action.setUnitInternalCargo(unit:getName(), 1000)
 end
 
@@ -1058,7 +1035,7 @@ local function activateCargoHandling(playerUnit, groupName)
 
   env.info("Activating cargo handling for: " .. groupName)
   local managementMenu = MENU_GROUP:New(group, "Cargo Management")
-  MENU_GROUP_COMMAND:New(group, "Load Cargo", managementMenu, LoadCargo, groupName)
+  MENU_GROUP_COMMAND:New(group, "Load Cargo (1,800lbs)", managementMenu, LoadCargo, groupName)
   MENU_GROUP_COMMAND:New(group, "Unload Cargo", managementMenu, UnloadCargo, groupName)
   --Initialize cargo status for this unit.
   if CargoStatus[groupName] == nil then

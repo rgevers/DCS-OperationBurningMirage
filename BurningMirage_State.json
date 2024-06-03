@@ -1,1 +1,642 @@
-{"Connections":[{"DestinationTheater":"Al Ismailiya","Reverse":false,"SourceTheater":"Port Said","Type":"HELO"},{"DestinationTheater":"Kibrit","Reverse":false,"SourceTheater":"Al Ismailiya","Type":"HELO"},{"DestinationTheater":"Damietta","Reverse":false,"SourceTheater":"Alexandria","Type":"SHIP"},{"DestinationTheater":"Damanhur","Reverse":false,"SourceTheater":"Alexandria","Type":"TRUCK"},{"DestinationTheater":"Al Mansurah","Reverse":false,"SourceTheater":"Damanhur","Type":"HELO"},{"DestinationTheater":"Ashkelon","Reverse":true,"SourceTheater":"Port Said","Type":"SHIP"},{"DestinationTheater":"Ashdod","Reverse":true,"SourceTheater":"Port Said","Type":"SHIP"},{"DestinationTheater":"Al Mansurah","Reverse":false,"SourceTheater":"Ramon","Type":"PLANE"},{"DestinationTheater":"Ramon","Reverse":true,"SourceTheater":"Melez","Type":"PLANE"},{"DestinationTheater":"BenGurion","Reverse":true,"SourceTheater":"Ramon","Type":"PLANE"},{"DestinationTheater":"Cairo","Reverse":false,"SourceTheater":"Al Mansurah","Type":"PLANE"},{"DestinationTheater":"Port Said","Reverse":false,"SourceTheater":"Damietta","Type":"SHIP"},{"DestinationTheater":"Cairo","Reverse":true,"SourceTheater":"Sixth Of October","Type":"HELO"},{"DestinationTheater":"Cairo","Reverse":false,"SourceTheater":"Bani Sweif","Type":"TRUCK"},{"DestinationTheater":"Cairo","Reverse":false,"SourceTheater":"Faiyum","Type":"TRUCK"},{"DestinationTheater":"Faiyum","Reverse":false,"SourceTheater":"Al Minya","Type":"TRUCK"},{"DestinationTheater":"Al Minya","Reverse":false,"SourceTheater":"Asyut","Type":"TRUCK"},{"DestinationTheater":"Gharib Cape","Reverse":false,"SourceTheater":"Al Tor","Type":"HELO"},{"DestinationTheater":"Kibrit","Reverse":true,"SourceTheater":"Cairo","Type":"HELO"},{"DestinationTheater":"Wadi al Jandali","SourceTheater":"Cairo","Type":"HELO"},{"DestinationTheater":"Melez","Reverse":true,"SourceTheater":"Kibrit","Type":"HELO"},{"DestinationTheater":"Kibrit","SourceTheater":"Suez","Type":"TRUCK"},{"DestinationTheater":"Suez","SourceTheater":"Abu Rudeis","Type":"SHIP"},{"DestinationTheater":"Abu Rudeis","SourceTheater":"Al Tor","Type":"SHIP"},{"DestinationTheater":"St. Catherine","SourceTheater":"Al Tor","Type":"HELO"},{"DestinationTheater":"St. Catherine","SourceTheater":"Tabuk","Type":"HELO"},{"DestinationTheater":"Ovda","SourceTheater":"St. Catherine","Type":"PLANE"},{"DestinationTheater":"Ramon","SourceTheater":"Ovda","Type":"PLANE"},{"DestinationTheater":"Duba","SourceTheater":"Tabuk","Type":"TRUCK"},{"DestinationTheater":"Al Tor","SourceTheater":"Duba","Type":"SHIP"},{"DestinationTheater":"Ashdod","SourceTheater":"Hebron","Type":"TRUCK"},{"DestinationTheater":"Ashkelon","SourceTheater":"Hebron","Type":"TRUCK"},{"DestinationTheater":"Nevatim","SourceTheater":"Ramon","Type":"HELO"},{"DestinationTheater":"Amman","SourceTheater":"BenGurion","Type":"TRUCK"},{"DestinationTheater":"Suez","SourceTheater":"Sudr Cape","Type":"TRUCK"},{"DestinationTheater":"El Arish","SourceTheater":"Hebron","Type":"HELO"},{"DestinationTheater":"YU59","SourceTheater":"Amman","Type":"HELO"},{"DestinationTheater":"Mitzpe Ramon","SourceTheater":"Ramon","Type":"TRUCK"},{"DestinationTheater":"North West Field","SourceTheater":"Andersen","Type":"TRUCK"},{"DestinationTheater":"Andersen","SourceTheater":"Cairo","Type":"PLANE"},{"DestinationTheater":"Antonio","SourceTheater":"Olf Orote","Type":"HELO"},{"DestinationTheater":"Pagan","SourceTheater":"Olf Orote","Type":"SHIP"},{"DestinationTheater":"GNovember","SourceTheater":"Pagan","Type":"HELO"},{"DestinationTheater":"GMike","SourceTheater":"Pagan","Type":"HELO"},{"DestinationTheater":"GOscar","SourceTheater":"Pagan","Type":"HELO"},{"DestinationTheater":"GHotel","SourceTheater":"Olf Orote","Type":"HELO"},{"DestinationTheater":"Olf Orote","SourceTheater":"GEcho","Type":"TRUCK"},{"DestinationTheater":"Olf Orote","SourceTheater":"GFoxtrot","Type":"TRUCK"},{"DestinationTheater":"Olf Orote","SourceTheater":"GGolf","Type":"TRUCK"},{"DestinationTheater":"GIndia","SourceTheater":"Olf Orote","Type":"SHIP"},{"DestinationTheater":"GCharlie","SourceTheater":"Antonio","Type":"TRUCK"},{"DestinationTheater":"GBravo","SourceTheater":"Antonio","Type":"TRUCK"},{"DestinationTheater":"GAlpha","SourceTheater":"Antonio","Type":"HELO"},{"DestinationTheater":"GCharlie","Reverse":true,"SourceTheater":"Andersen","Type":"TRUCK"},{"DestinationTheater":"GBravo","Reverse":true,"SourceTheater":"Andersen","Type":"TRUCK"},{"DestinationTheater":"GAlpha","Reverse":true,"SourceTheater":"Andersen","Type":"HELO"},{"DestinationTheater":"Rota","Reverse":true,"SourceTheater":"Andersen","Type":"HELO"},{"DestinationTheater":"Tinian","Reverse":true,"SourceTheater":"Rota","Type":"PLANE"},{"DestinationTheater":"Saipan","SourceTheater":"North Saipan","Type":"HELO"},{"DestinationTheater":"Tinian","SourceTheater":"Saipan","Type":"HELO"}],"LastModified":1717363127,"TheaterHealth":{"Abu Rudeis":{"Airport":"Abu Rudeis","Coalition":"red","Health":3000,"MaxHealth":3000},"Al Ismailiya":{"Coalition":"red","Health":3000,"MaxHealth":3000},"Al Mansurah":{"Coalition":"red","Health":3000,"MaxHealth":3000},"Al Minya":{"Coalition":"red","Health":3000,"MaxHealth":3000},"Al Tor":{"Coalition":"red","Health":3000,"MaxHealth":3000},"Alexandria":{"Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000},"Amman":{"Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000},"Andersen":{"Airport":"Andersen AFB","Coalition":"blue","Health":2000,"ManufacturingSource":true,"MaxHealth":2000},"Antonio":{"Coalition":"red","Health":2000,"MaxHealth":2000},"Ashdod":{"Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000},"Ashkelon":{"Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000},"Asyut":{"Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000},"Bani Sweif":{"Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000},"BenGurion":{"Airport":"Ben-Gurion","Coalition":"red","Health":3000,"MaxHealth":3000},"Cairo":{"Coalition":"blue","Health":4000,"ManufacturingSource":true,"MaxHealth":4000},"Damanhur":{"Coalition":"red","Health":2550,"ManufacturingSource":true,"MaxHealth":3000},"Damietta":{"Coalition":"red","Health":3000,"MaxHealth":3000},"Duba":{"Coalition":"red","Health":3000,"MaxHealth":3000},"El Arish":{"Airport":"El Arish","Coalition":"blue","Health":3000,"MaxHealth":3000},"Faiyum":{"Coalition":"red","Health":3000,"MaxHealth":3000},"GAlpha":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GBravo":{"Coalition":"red","Health":1725,"MaxHealth":2000},"GCharlie":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GEcho":{"Coalition":"red","Health":2000,"ManufacturingSource":true,"MaxHealth":2000},"GFoxtrot":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GGolf":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GHotel":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GIndia":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GJuliet":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GKilo":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GLima":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GMike":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GNovember":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GOscar":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GPapa":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GQuebec":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GRomeo":{"Coalition":"red","Health":2000,"MaxHealth":2000},"Gharib Cape":{"Coalition":"red","Health":3000,"MaxHealth":3000},"Hebron":{"Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000},"Kibrit":{"Airport":"Kibrit Air Base","Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000},"Melez":{"Airport":"Nevatim","Coalition":"red","Health":3000,"MaxHealth":3000},"Mitzpe Ramon":{"Coalition":"red","Health":2000,"MaxHealth":2000},"Nevatim":{"Airport":"Nevatim","Coalition":"red","Health":3000,"MaxHealth":3000},"North Saipan":{"Coalition":"red","Health":2000,"ManufacturingSource":true,"MaxHealth":2000},"North West Field":{"Airport":"North West Field","Coalition":"blue","Health":2000,"MaxHealth":2000},"Olf Orote":{"Airport":"Olf Orote","Coalition":"red","Health":1900,"MaxHealth":2000},"Ovda":{"Airport":"Ovda","Coalition":"red","Health":3000,"MaxHealth":3000},"Pagan":{"Airport":"Pagan Airstrip","Coalition":"red","Health":2000,"MaxHealth":2000},"Port Said":{"Coalition":"red","Health":3000,"MaxHealth":3000},"Ramon":{"Airport":"Ramon Airbase","Coalition":"red","Health":3000,"MaxHealth":3000},"Rota":{"Airport":"Rota Intl","Coalition":"red","Health":2000,"ManufacturingSource":true,"MaxHealth":2000},"Saipan":{"Airport":"Saipan Intl","Coalition":"red","Health":2000,"MaxHealth":2000},"Sixth Of October":{"Airport":"Cairo West","Coalition":"blue","Health":3000,"ManufacturingSource":true,"MaxHealth":3000},"St. Catherine":{"Coalition":"red","Health":3000,"MaxHealth":3000},"Sudr Cape":{"Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000},"Suez":{"Coalition":"red","Health":3000,"MaxHealth":3000},"Tabuk":{"Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000},"Tinian":{"Airport":"Tinian Intl","Coalition":"red","Health":2000,"ManufacturingSource":true,"MaxHealth":2000},"Wadi al Jandali":{"Airport":"Wadi al Jandali","Coalition":"blue","Health":2000,"MaxHealth":2000},"YU59":{"Coalition":"red","Health":2000,"MaxHealth":2000}}}
+{
+    "Connections": [
+        {
+            "DestinationTheater": "Al Ismailiya",
+            "SourceTheater": "Port Said",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Kibrit",
+            "SourceTheater": "Al Ismailiya",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Damietta",
+            "SourceTheater": "Alexandria",
+            "Type": "SHIP"
+        },
+        {
+            "DestinationTheater": "Damanhur",
+            "SourceTheater": "Alexandria",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "Al Mansurah",
+            "SourceTheater": "Damanhur",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Ashkelon",
+            "SourceTheater": "Port Said",
+            "Type": "SHIP"
+        },
+        {
+            "DestinationTheater": "Ashdod",
+            "SourceTheater": "Port Said",
+            "Type": "SHIP"
+        },
+        {
+            "DestinationTheater": "Al Mansurah",
+            "SourceTheater": "Ramon",
+            "Type": "PLANE"
+        },
+        {
+            "DestinationTheater": "Ramon",
+            "SourceTheater": "Melez",
+            "Type": "PLANE"
+        },
+        {
+            "DestinationTheater": "BenGurion",
+            "SourceTheater": "Ramon",
+            "Type": "PLANE"
+        },
+        {
+            "DestinationTheater": "Cairo",
+            "SourceTheater": "Al Mansurah",
+            "Type": "PLANE"
+        },
+        {
+            "DestinationTheater": "Port Said",
+            "SourceTheater": "Damietta",
+            "Type": "SHIP"
+        },
+        {
+            "DestinationTheater": "Cairo",
+            "SourceTheater": "Sixth Of October",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Cairo",
+            "SourceTheater": "Bani Sweif",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "Cairo",
+            "SourceTheater": "Faiyum",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "Faiyum",
+            "SourceTheater": "Al Minya",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "Al Minya",
+            "SourceTheater": "Asyut",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "Gharib Cape",
+            "SourceTheater": "Al Tor",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Kibrit",
+            "SourceTheater": "Cairo",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Wadi al Jandali",
+            "SourceTheater": "Cairo",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Melez",
+            "SourceTheater": "Kibrit",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Kibrit",
+            "SourceTheater": "Suez",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "Suez",
+            "SourceTheater": "Abu Rudeis",
+            "Type": "SHIP"
+        },
+        {
+            "DestinationTheater": "Abu Rudeis",
+            "SourceTheater": "Al Tor",
+            "Type": "SHIP"
+        },
+        {
+            "DestinationTheater": "St. Catherine",
+            "SourceTheater": "Al Tor",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "St. Catherine",
+            "SourceTheater": "Tabuk",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Ovda",
+            "SourceTheater": "St. Catherine",
+            "Type": "PLANE"
+        },
+        {
+            "DestinationTheater": "Ramon",
+            "SourceTheater": "Ovda",
+            "Type": "PLANE"
+        },
+        {
+            "DestinationTheater": "Duba",
+            "SourceTheater": "Tabuk",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "Al Tor",
+            "SourceTheater": "Duba",
+            "Type": "SHIP"
+        },
+        {
+            "DestinationTheater": "Ashdod",
+            "SourceTheater": "Hebron",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "Ashkelon",
+            "SourceTheater": "Hebron",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "Nevatim",
+            "SourceTheater": "Ramon",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Amman",
+            "SourceTheater": "BenGurion",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "Suez",
+            "SourceTheater": "Sudr Cape",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "El Arish",
+            "SourceTheater": "Hebron",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "YU59",
+            "SourceTheater": "Amman",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Mitzpe Ramon",
+            "SourceTheater": "Ramon",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "North West Field",
+            "SourceTheater": "Andersen",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "Andersen",
+            "SourceTheater": "Cairo",
+            "Type": "PLANE"
+        },
+        {
+            "DestinationTheater": "Antonio",
+            "SourceTheater": "Olf Orote",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Pagan",
+            "SourceTheater": "Olf Orote",
+            "Type": "SHIP"
+        },
+        {
+            "DestinationTheater": "GNovember",
+            "SourceTheater": "Pagan",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "GMike",
+            "SourceTheater": "Pagan",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "GOscar",
+            "SourceTheater": "Pagan",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "GHotel",
+            "SourceTheater": "Olf Orote",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Olf Orote",
+            "SourceTheater": "GEcho",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "Olf Orote",
+            "SourceTheater": "GFoxtrot",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "Olf Orote",
+            "SourceTheater": "GGolf",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "GIndia",
+            "SourceTheater": "Olf Orote",
+            "Type": "SHIP"
+        },
+        {
+            "DestinationTheater": "GCharlie",
+            "SourceTheater": "Antonio",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "GBravo",
+            "SourceTheater": "Antonio",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "GAlpha",
+            "SourceTheater": "Antonio",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "GCharlie",
+            "SourceTheater": "Andersen",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "GBravo",
+            "SourceTheater": "Andersen",
+            "Type": "TRUCK"
+        },
+        {
+            "DestinationTheater": "GAlpha",
+            "SourceTheater": "Andersen",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Rota",
+            "SourceTheater": "Andersen",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Tinian",
+            "SourceTheater": "Rota",
+            "Type": "PLANE"
+        },
+        {
+            "DestinationTheater": "Saipan",
+            "SourceTheater": "North Saipan",
+            "Type": "HELO"
+        },
+        {
+            "DestinationTheater": "Tinian",
+            "SourceTheater": "Saipan",
+            "Type": "HELO"
+        }
+    ],
+    "LastModified": 1717443133,
+    "TheaterHealth": {
+        "Abu Rudeis": {
+            "Airport": "Abu Rudeis",
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Al Ismailiya": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Al Mansurah": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Al Minya": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Al Tor": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Alexandria": {
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "Amman": {
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "Andersen": {
+            "Airport": "Andersen AFB",
+            "Coalition": "blue",
+            "Health": 2000,
+            "ManufacturingSource": true,
+            "MaxHealth": 2000
+        },
+        "Antonio": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "Ashdod": {
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "Ashkelon": {
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "Asyut": {
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "Bani Sweif": {
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "BenGurion": {
+            "Airport": "Ben-Gurion",
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Cairo": {
+            "Coalition": "blue",
+            "Health": 4000,
+            "ManufacturingSource": true,
+            "MaxHealth": 4000
+        },
+        "Damanhur": {
+            "Coalition": "red",
+            "Health": 2850,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "Damietta": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Duba": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "El Arish": {
+            "Airport": "El Arish",
+            "Coalition": "blue",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Faiyum": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "GAlpha": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GBravo": {
+            "Coalition": "red",
+            "Health": 1825,
+            "MaxHealth": 2000
+        },
+        "GCharlie": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GEcho": {
+            "Coalition": "red",
+            "Health": 2000,
+            "ManufacturingSource": true,
+            "MaxHealth": 2000
+        },
+        "GFoxtrot": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GGolf": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GHotel": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GIndia": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GJuliet": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GKilo": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GLima": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GMike": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GNovember": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GOscar": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GPapa": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GQuebec": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GRomeo": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "Gharib Cape": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Hebron": {
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "Kibrit": {
+            "Airport": "Kibrit Air Base",
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "Melez": {
+            "Airport": "Nevatim",
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Mitzpe Ramon": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "Nevatim": {
+            "Airport": "Nevatim",
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "North Saipan": {
+            "Coalition": "red",
+            "Health": 2000,
+            "ManufacturingSource": true,
+            "MaxHealth": 2000
+        },
+        "North West Field": {
+            "Airport": "North West Field",
+            "Coalition": "blue",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "Olf Orote": {
+            "Airport": "Olf Orote",
+            "Coalition": "red",
+            "Health": 1900,
+            "MaxHealth": 2000
+        },
+        "Ovda": {
+            "Airport": "Ovda",
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Pagan": {
+            "Airport": "Pagan Airstrip",
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "Port Said": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Ramon": {
+            "Airport": "Ramon Airbase",
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Rota": {
+            "Airport": "Rota Intl",
+            "Coalition": "red",
+            "Health": 2000,
+            "ManufacturingSource": true,
+            "MaxHealth": 2000
+        },
+        "Saipan": {
+            "Airport": "Saipan Intl",
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "Sixth Of October": {
+            "Airport": "Cairo West",
+            "Coalition": "blue",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "St. Catherine": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Sudr Cape": {
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "Suez": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Tabuk": {
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "Tinian": {
+            "Airport": "Tinian Intl",
+            "Coalition": "red",
+            "Health": 2000,
+            "ManufacturingSource": true,
+            "MaxHealth": 2000
+        },
+        "Wadi al Jandali": {
+            "Airport": "Wadi al Jandali",
+            "Coalition": "blue",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "YU59": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        }
+    }
+}
