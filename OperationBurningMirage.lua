@@ -19,14 +19,6 @@ local function DrawTheaterHealth(theater, theaterLoc, health, theaterName)
     .3, 14)
 end
 
-local function DrawConnectionHealth(sourceCoord, destCoord, health)
-  local avgX = (sourceCoord.x + destCoord.x) / 2
-  local avgz = (sourceCoord.z + destCoord.z) / 2
-  local vec = POINT_VEC3:New(avgX, 0, avgz)
-  local theaterLoc = COORDINATE:NewFromVec3(vec)
-  theaterLoc:TextToAll(math.floor((health * 100) + .5) .. "%", -1, { 1, 1, 1 }, 1, { 0, 0, 0 }, .3, 14)
-end
-
 local function DrawTheater(theater, health, coalition, coord, radius, theaterName)
   local color
   local colorFactory
@@ -43,10 +35,10 @@ local function DrawTheater(theater, health, coalition, coord, radius, theaterNam
     coord:CircleToAll(radius, -1, colorFactory, 1, colorFactory, .25, 0)
   end
   coord:CircleToAll(radius, -1, color, 1, color, .25, 0)
-  DrawTheaterHealth(theater, coord, health, theaterName)
+  DrawTheaterHealth(theater, coord:Translate(radius*.75, 150), health, theaterName)
 end
 
-local function DrawConnection(sourceMCoord, destMCoord, health, coalition)
+local function DrawConnection(sourceMCoord, destMCoord, coalition)
   local color
 
   if coalition == "red" then
@@ -58,11 +50,9 @@ local function DrawConnection(sourceMCoord, destMCoord, health, coalition)
   end
 
   sourceMCoord:ArrowToAll(destMCoord, -1, color, 1, color, .5, 0)
-  DrawConnectionHealth(sourceMCoord, destMCoord, health)
 end
 
-local function DrawConnectionHelper(sourceTheater, destinationTheater, coalition, connectionHealth, connectionName,
-                                    connectionMaxHealth)
+local function DrawConnectionHelper(sourceTheater, destinationTheater, coalition, connectionName)
   local sourceZone = ZONE:New(sourceTheater)
   local destinationZone = ZONE:New(destinationTheater)
   if (sourceZone ~= nil and destinationZone ~= nil) then
@@ -74,7 +64,7 @@ local function DrawConnectionHelper(sourceTheater, destinationTheater, coalition
     local destCoord = COORDINATE:NewFromVec2(theaterCoord)
 
     env.info("Drawing connection: " .. connectionName)
-    DrawConnection(sourceCoord, destCoord, connectionHealth / connectionMaxHealth, coalition) --TODO Fault in health if nil
+    DrawConnection(sourceCoord, destCoord, coalition) --TODO Fault in health if nil
   end
 end
 --#endregion
@@ -670,18 +660,6 @@ local function StepO()
       env.info("Zone " .. zoneName .. " manufactured " .. MANUFACTURE_AMOUNT .. " goods.")
     end
   end
-
-  --For now convoys heal by a flat amount (equiv to manufacturing)
-  for _, connection in ipairs(CurrentState.Connections) do
-    if connection.Health < connection.MaxHealth then
-      connection.Health = connection.Health + MANUFACTURE_AMOUNT
-      if connection.Health > connection.MaxHealth then
-        connection.Health = connection.MaxHealth
-      end
-      env.info("Connection " ..
-        connection.SourceTheater .. "-" .. connection.DestinationTheater .. " healed to " .. connection.Health .. ".")
-    end
-  end
 end
 
 ---Step 1: Traverse both graphs in topological order and pull supplies along connections. This approach prioritizes moving resources upstream so that we maximize
@@ -712,7 +690,7 @@ local function Step1(topologicalSort)
         if upstreamZone then
           if zone.Health < zone.MaxHealth and upstreamZone.Health > RESUPPLY_AMOUNT then --Recheck since we are doing this in a loop, and verify source has enough to give.
             --Reduce supplied amount by the amount that can be sent across connection
-            local suppliedAmount = RESUPPLY_AMOUNT * connection.Health / connection.MaxHealth
+            local suppliedAmount = RESUPPLY_AMOUNT
             if upstreamZone.Health - suppliedAmount > 0 then
               --If providing these supplies would wipe this zone, don't do it.
               zone.Health = zone.Health + suppliedAmount
@@ -802,7 +780,7 @@ local function RunDailySimulation()
 
   local currentTIme = os.time(os.date("!*t"))
   CurrentState.LastModified = currentTIme
-  
+
   env.info("Final state: ")
   env.info(JSON:encode(CurrentState))
 end
@@ -867,13 +845,11 @@ local function ProcessConnections(connections)
       end
     end
     --Add connection to the map
-    local connectionHealth = connection.Health
     local drawCoalition = "grey"
     if CurrentState.TheaterHealth[sourceTheater].Coalition == CurrentState.TheaterHealth[destinationTheater].Coalition then
       drawCoalition = CurrentState.TheaterHealth[sourceTheater].Coalition
     end
-    DrawConnectionHelper(sourceTheater, destinationTheater, drawCoalition, connectionHealth, connectionName,
-      connection.MaxHealth)
+    DrawConnectionHelper(sourceTheater, destinationTheater, drawCoalition, connectionName)
   end
   return zonesToAttack
 end
@@ -1226,10 +1202,14 @@ local function handleUnitLostEvent(event)
       --For units we will implementa default score value.
       score = 100
     end
-    local found = false
     for zoneName, zone in pairs(MapTheaters) do
-      if starts_with(unitName, string.lower(zoneName)) or starts_with(unitName, string.lower("sam-blue-" .. zoneName)) or starts_with(unitName, string.lower("sam-red-" .. zoneName)) or starts_with(unitName, string.lower("hvt-blue-" .. zoneName)) or starts_with(unitName, string.lower("hvt-red-" .. zoneName)) then
-        env.info("Unit hit in zone: " .. zoneName)
+      if starts_with(unitName, string.lower(zoneName)) or starts_with(unitName, string.lower("sam-blue-" .. zoneName)) or starts_with(unitName, string.lower("sam-red-" .. zoneName)) or starts_with(unitName, string.lower("hvt-blue-" .. zoneName)) or starts_with(unitName, string.lower("hvt-red-" .. zoneName) or starts_with(unitName, string.lower("conv-" .. zoneName))) then
+        if (starts_with(unitName, string.lower("conv-" .. zoneName))) then
+          env.info("Unit hit on convoy from: " .. zoneName)
+        else
+          env.info("Unit hit in zone: " .. zoneName)
+        end
+
         --This unit is associated with the selected zone.
         CurrentState.TheaterHealth[zoneName].Health = CurrentState.TheaterHealth[zoneName].Health - score
         if CurrentState.TheaterHealth[zoneName].Health < 0 then
@@ -1244,30 +1224,7 @@ local function handleUnitLostEvent(event)
           KillSummary[summaryKey] = KillSummary[summaryKey] +
               math.floor(((score / CurrentState.TheaterHealth[zoneName].MaxHealth) * 100) + .5)
         end
-        found = true
         break
-      end
-    end
-    if not found then
-      for _, connection in ipairs(CurrentState.Connections) do
-        if starts_with(unitName, string.lower("conv-" .. connection.SourceTheater .. "-" .. connection.DestinationTheater)) then
-          connection.Health = connection.Health - score
-          if connection.Health < 0 then
-            connection.Health = 0
-            -- MESSAGE:New(connection.SourceTheater .. "-" .. connection.DestinationTheater .. " has reached 0% health.",
-            --   20):ToAll()
-          end
-
-          --Summarize kill
-          local summaryKey = "Convoy " ..
-              connection.SourceTheater .. "-" .. connection.DestinationTheater .. ": " .. type
-          if (KillSummary[summaryKey] == nil) then
-            KillSummary[summaryKey] = math.floor(((score / connection.MaxHealth) * 100) + .5)
-          else
-            KillSummary[summaryKey] = KillSummary[summaryKey] + math.floor(((score / connection.MaxHealth) * 100) + .5)
-          end
-          break
-        end
       end
     end
   end
@@ -1335,13 +1292,15 @@ local function showAttackSchedule()
     messageString = messageString ..
         " " ..
         source ..
-        " is launching an air attack on " .. target .. " at " .. math.floor(AttackTime[source] / 60) .. " minutes after mission start.\n"
+        " is launching an air attack on " ..
+        target .. " at " .. math.floor(AttackTime[source] / 60) .. " minutes after mission start.\n"
   end
   for source, target in pairs(GroundAttackSchedule) do
     messageString = messageString ..
         " " ..
         source ..
-        " is launching a ground attack on " .. target .. " at " .. math.floor(GroundAttackTime[source] / 60) .. " minutes after mission start.\n"
+        " is launching a ground attack on " ..
+        target .. " at " .. math.floor(GroundAttackTime[source] / 60) .. " minutes after mission start.\n"
   end
   MESSAGE:New(messageString, 20):ToAll()
 end
