@@ -1,21 +1,6 @@
 {
     "Connections": [
         {
-            "DestinationTheater": "Al Ismailiya",
-            "SourceTheater": "Port Said",
-            "Type": "HELO"
-        },
-        {
-            "DestinationTheater": "Kibrit",
-            "SourceTheater": "Al Ismailiya",
-            "Type": "HELO"
-        },
-        {
-            "DestinationTheater": "Damietta",
-            "SourceTheater": "Alexandria",
-            "Type": "SHIP"
-        },
-        {
             "DestinationTheater": "Damanhur",
             "SourceTheater": "Alexandria",
             "Type": "TRUCK"
@@ -109,11 +94,6 @@
             "DestinationTheater": "Kibrit",
             "SourceTheater": "Suez",
             "Type": "TRUCK"
-        },
-        {
-            "DestinationTheater": "Suez",
-            "SourceTheater": "Abu Rudeis",
-            "Type": "SHIP"
         },
         {
             "DestinationTheater": "Abu Rudeis",
@@ -307,12 +287,14 @@
             "Airport": "Abu Rudeis",
             "Coalition": "red",
             "Health": 3000,
-            "MaxHealth": 3000
+            "MaxHealth": 3000,
+            "ShipConnections": ["Suez"]
         },
         "Al Ismailiya": {
             "Coalition": "red",
             "Health": 3000,
-            "MaxHealth": 3000
+            "MaxHealth": 3000,
+            "HeloConnections": ["Kibrit"]
         },
         "Al Mansurah": {
             "Coalition": "red",
@@ -333,7 +315,8 @@
             "Coalition": "red",
             "Health": 3000,
             "ManufacturingSource": true,
-            "MaxHealth": 3000
+            "MaxHealth": 3000,
+            "ShipConnections": ["Damietta"]
         },
         "Amman": {
             "Coalition": "red",
@@ -570,7 +553,8 @@
         "Port Said": {
             "Coalition": "red",
             "Health": 3000,
-            "MaxHealth": 3000
+            "MaxHealth": 3000,
+            "HeloConnections": ["Al Ismailiya"]
         },
         "Ramon": {
             "Airport": "Ramon Airbase",

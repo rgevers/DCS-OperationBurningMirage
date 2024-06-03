@@ -7,6 +7,7 @@ AttackSchedule = {}
 AttackTime = {}
 GroundAttackSchedule = {}
 GroundAttackTime = {}
+Connections = {}
 
 MANUFACTURE_AMOUNT = 200
 RESUPPLY_AMOUNT = 100
@@ -671,7 +672,7 @@ local function Step1(topologicalSort)
     --Does this zone still need further healing?
     if zone.Health < zone.MaxHealth then
       --Find an upstream zone that has sufficient supplies to ship to us.
-      for _, connection in ipairs(CurrentState.Connections) do
+      for _, connection in ipairs(Connections) do
         local upstreamZone = nil
         local upstreamZoneName = nil
         if connection.DestinationTheater == zoneName and CurrentState.TheaterHealth[connection.SourceTheater].Coalition == zone.Coalition then
@@ -725,7 +726,7 @@ local function RunDailySimulation()
     end
   end
 
-  for _, connection in ipairs(CurrentState.Connections) do
+  for _, connection in ipairs(Connections) do
     local edge = {}
 
     if CurrentState.TheaterHealth[connection.SourceTheater] == "red" and CurrentState.TheaterHealth[connection.DestinationTheater] == "red" then
@@ -836,6 +837,46 @@ local jsonStateContent = read_file(StateFilePath)
 if jsonStateContent then
   CurrentState, _, err = JSON:decode(jsonStateContent)
 
+  --To simplify the transition between datastructures, building a list of all connections here from the new state file format. This used to be broken out into a list of edges separate from the zone definition.
+  for theaterName, theater in pairs(CurrentState.TheaterHealth) do
+    if theater.HeloConnections then
+      for _, connectionDestination in ipairs(theater.HeloConnections) do
+        local connection = {}
+        connection.DestinationTheater = connectionDestination
+        connection.SourceTheater = theaterName
+        connection.Type = "HELO"
+        table.insert(Connections, connection)
+      end
+    end
+    if theater.ShipConnections then
+      for _, connectionDestination in ipairs(theater.ShipConnections) do
+        local connection = {}
+        connection.DestinationTheater = connectionDestination
+        connection.SourceTheater = theaterName
+        connection.Type = "SHIP"
+        table.insert(Connections, connection)
+      end
+    end
+    if theater.PlaneConnections then
+      for _, connectionDestination in ipairs(theater.PlaneConnections) do
+        local connection = {}
+        connection.DestinationTheater = connectionDestination
+        connection.SourceTheater = theaterName
+        connection.Type = "PLANE"
+        table.insert(Connections, connection)
+      end
+    end
+    if theater.TruckConnections then
+      for _, connectionDestination in ipairs(theater.TruckConnections) do
+        local connection = {}
+        connection.DestinationTheater = connectionDestination
+        connection.SourceTheater = theaterName
+        connection.Type = "TRUCK"
+        table.insert(Connections, connection)
+      end
+    end
+  end
+
   RunDailySimulation()
 
   local theaterCount = 0
@@ -872,7 +913,7 @@ if jsonStateContent then
   end
 
   -- Iterate through Connections
-  local theatersToAttack = ProcessConnections(CurrentState.Connections)
+  local theatersToAttack = ProcessConnections(Connections)
   --Schedule Air Attacks
   for _, theaterToAttack in ipairs(theatersToAttack) do
     local zone1 = ZONE:New(theaterToAttack .. "-strike")
