@@ -9,18 +9,6 @@ def update_theater_health(source_data, target_data):
         if theater_name in source_theater_health:
             theater_info['Health'] = source_theater_health[theater_name]['Health']
 
-def update_connections_health(source_data, target_data):
-    # Updating Connections
-    source_connections_health = {}
-    for conn in source_data.get('Connections', []):
-        key = (conn['SourceTheater'], conn['DestinationTheater'])
-        source_connections_health[key] = conn['Health']
-    
-    for conn in target_data.get('Connections', []):
-        key = (conn['SourceTheater'], conn['DestinationTheater'])
-        if key in source_connections_health:
-            conn['Health'] = source_connections_health[key]
-
 def main(source_file, target_file, output_file):
     # Load source and target JSON data
     with open(source_file, 'r') as f:
@@ -31,7 +19,6 @@ def main(source_file, target_file, output_file):
     
     # Update TheaterHealth and Connections
     update_theater_health(source_data, target_data)
-    update_connections_health(source_data, target_data)
     
     # Save the updated target data to the output file
     with open(output_file, 'w') as f:
