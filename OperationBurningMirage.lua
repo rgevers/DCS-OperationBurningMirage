@@ -39,7 +39,7 @@ local function DrawTheater(theater, health, coalition, coord, radius, theaterNam
   DrawTheaterHealth(theater, coord:Translate(radius * .75, 150), health, theaterName)
 end
 
-local function DrawConnection(sourceMCoord, destMCoord, coalition)
+local function DrawConnection(sourceMCoord, destMCoord, coalition, midCoord)
   local color
 
   if coalition == "red" then
@@ -49,11 +49,15 @@ local function DrawConnection(sourceMCoord, destMCoord, coalition)
   else
     color = { 0, 0, 0 } --TODO Change the type of this arrow as well.
   end
-
-  sourceMCoord:ArrowToAll(destMCoord, -1, color, 1, color, .5, 0)
+  if (midCoord) then
+    sourceMCoord:ArrowToAll(midCoord, -1, color, 1, color, .5, 0)
+    midCoord:ArrowToAll(destMCoord, -1, color, 1, color, .5, 0)
+  else
+    sourceMCoord:ArrowToAll(destMCoord, -1, color, 1, color, .5, 0)
+  end
 end
 
-local function DrawConnectionHelper(sourceTheater, destinationTheater, coalition, connectionName)
+local function DrawConnectionHelper(sourceTheater, destinationTheater, coalition, connectionName, connectionType)
   local sourceZone = ZONE:New(sourceTheater)
   local destinationZone = ZONE:New(destinationTheater)
   if (sourceZone ~= nil and destinationZone ~= nil) then
@@ -63,9 +67,16 @@ local function DrawConnectionHelper(sourceTheater, destinationTheater, coalition
     local sourceCoord = COORDINATE:NewFromVec2(theaterCoord)
     theaterCoord = destinationZone:GetVec2()
     local destCoord = COORDINATE:NewFromVec2(theaterCoord)
+    local midCoord = nil
+
+    if (connectionType == "SHIP") then
+      local midpointZone = ZONE:New(sourceTheater .. "-shipConvoy-turn")
+      local midpoint = midpointZone:GetVec2()
+      midCoord = COORDINATE:NewFromVec2(midpoint)
+    end
 
     env.info("Drawing connection: " .. connectionName)
-    DrawConnection(sourceCoord, destCoord, coalition) --TODO Fault in health if nil
+    DrawConnection(sourceCoord, destCoord, coalition, midCoord) --TODO Fault in health if nil
   end
 end
 --#endregion
@@ -219,7 +230,11 @@ local function SpawnPlaneConvoy(arguments)
       :Spawn() -- TODO why won't spawn scheduled work here?
 end
 
-local function SpawnHeloConvoy(coalition, sourceTheater, destinationTheater)
+local function SpawnHeloConvoy(arguments)
+  local sourceTheater = arguments.sourceTheater
+  local destinationTheater = arguments.destinationTheater
+  local coalition = arguments.coalition
+
   local groupName = "conv-" .. sourceTheater .. "-" .. destinationTheater
   local landingZone1 = sourceTheater .. "-convoy"
   local landingZone2 = destinationTheater .. "-convoy" -- TODO - Make resilient via warning if zone not found.
@@ -280,7 +295,11 @@ local function SpawnHeloConvoy(coalition, sourceTheater, destinationTheater)
       :Spawn()
 end
 
-local function SpawnTruckConvoy(coalition, sourceTheater, destinationTheater)
+local function SpawnTruckConvoy(arguments)
+  local sourceTheater = arguments.sourceTheater
+  local destinationTheater = arguments.destinationTheater
+  local coalition = arguments.coalition
+
   local groupName = "conv-" .. sourceTheater .. "-" .. destinationTheater
   local landingZone1 = sourceTheater .. "-convoy"
   local landingZone2 = destinationTheater .. "-convoy" -- TODO - Make resilient via warning if zone not found.
@@ -792,13 +811,25 @@ local function ProcessConnections(connections)
       end
     else
       --TODO Fixed wing cargo for cross-map usage
-
+      local delay = math.random(10, 480) * 60
       if connection.Type == "HELO" then
-        SpawnHeloConvoy(coalition, sourceTheater, destinationTheater)
+        timer.scheduleFunction(SpawnHeloConvoy,
+          {
+            coalition = coalition,
+            sourceTheater = sourceTheater,
+            destinationTheater = destinationTheater
+          },
+          timer.getTime() + delay)
       end
 
       if connection.Type == "TRUCK" then
-        SpawnTruckConvoy(coalition, sourceTheater, destinationTheater)
+        timer.scheduleFunction(SpawnTruckConvoy,
+          {
+            coalition = coalition,
+            sourceTheater = sourceTheater,
+            destinationTheater = destinationTheater
+          },
+          timer.getTime() + delay)
       end
 
       if connection.Type == "SHIP" then
@@ -806,8 +837,6 @@ local function ProcessConnections(connections)
       end
 
       if connection.Type == "PLANE" then
-        local delay = math.random(10, 120) * 60
-        delay = 30 --TODO Just for testing
         timer.scheduleFunction(SpawnPlaneConvoy,
           {
             coalition = coalition,
@@ -826,7 +855,7 @@ local function ProcessConnections(connections)
     if CurrentState.TheaterHealth[sourceTheater].Coalition == CurrentState.TheaterHealth[destinationTheater].Coalition then
       drawCoalition = CurrentState.TheaterHealth[sourceTheater].Coalition
     end
-    DrawConnectionHelper(sourceTheater, destinationTheater, drawCoalition, connectionName)
+    DrawConnectionHelper(sourceTheater, destinationTheater, drawCoalition, connectionName, connection.Type)
   end
   return zonesToAttack
 end
