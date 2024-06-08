@@ -661,7 +661,6 @@ end
 
 ---Step 0: Flip zones that are captured (0 health) and then start producing manufactured goods.
 local function StepO()
-
   --New - Before doing anything else damage all blue zones by RESUPPLY_AMOUNT. If a blue zone is unsupported it should eventually flip back.
   for zoneName, zone in pairs(CurrentState.TheaterHealth) do
     if zone.Coalition == "blue" then
@@ -977,7 +976,7 @@ if jsonStateContent then
             --This zone should attack if it can.
             if CurrentState.TheaterHealth[attackingTheater].Airport then
               --TODO If > 30 miles away, spawn a fixed wing attack flight. If < 30 miles spawn a helo attack flight.
-              local delay = math.random(30, 800) * 60
+              local delay = math.random(30, 240) * 60
               timer.scheduleFunction(spawnSeadMission,
                 { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay)
               timer.scheduleFunction(spawnStrikeMission,
@@ -1016,7 +1015,7 @@ if jsonStateContent then
             --This zone should attack if it can.
             --Make sure the distance is not too far.
             --TODO - Sort by nearest?
-            local delay = math.random(30, 800) * 60
+            local delay = math.random(30, 240) * 60
             timer.scheduleFunction(spawnArmorMission,
               { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay)
             env.info("New ground attack planned. " .. attackingTheater .. ":" .. theaterToAttack)
@@ -1258,7 +1257,7 @@ local function handleUnitLostEvent(event)
     if not score then
       env.info("Score not found for: " .. type)
       --For units we will implementa default score value.
-      score = 100
+      score = 25
     end
     for zoneName, zone in pairs(MapTheaters) do
       if starts_with(unitName, string.lower(zoneName)) or starts_with(unitName, string.lower("sam-blue-" .. zoneName)) or starts_with(unitName, string.lower("sam-red-" .. zoneName)) or starts_with(unitName, string.lower("hvt-blue-" .. zoneName)) or starts_with(unitName, string.lower("hvt-red-" .. zoneName) or starts_with(unitName, string.lower("conv-" .. zoneName))) then
@@ -1344,27 +1343,40 @@ timer.scheduleFunction(DoBackgroundWork, "", timer.getTime() + 30)
 
 --#region Coalition Menus
 
-local function showAttackSchedule()
-  local messageString = "Currently Planned Attacks:\n"
-  for source, target in pairs(AttackSchedule) do
-    messageString = messageString ..
-        " " ..
-        source ..
-        " is launching an air attack on " ..
-        target .. " at " .. math.floor(AttackTime[source] / 60) .. " minutes after mission start.\n"
-  end
-  for source, target in pairs(GroundAttackSchedule) do
-    messageString = messageString ..
-        " " ..
-        source ..
-        " is launching a ground attack on " ..
-        target .. " at " .. math.floor(GroundAttackTime[source] / 60) .. " minutes after mission start.\n"
+local function showAirAttackSchedule()
+  local timeDelay = math.floor((AttackTime[source] - timer.getTime()) / 60)
+  if timeDelay > 0 then
+    local messageString = "Currently Planned Air Attacks:\n"
+    for source, target in pairs(AttackSchedule) do
+      messageString = messageString ..
+          " " ..
+          source ..
+          " is launching an air attack on " ..
+          target .. " in " .. timeDelay .. " minutes from now.\n"
+    end
   end
   MESSAGE:New(messageString, 20):ToAll()
 end
 
+local function showGroundAttackSchedule()
+  local timeDelay = math.floor((GroundAttackTime[source] - timer.getTime()) / 60)
+  if timeDelay > 0 then
+    local messageString = "Currently Planned Ground Attacks:\n"
+    for source, target in pairs(GroundAttackSchedule) do
+      messageString = messageString ..
+          " " ..
+          source ..
+          " is launching a ground attack on " ..
+          target .. "in " .. timeDelay .. " minutes from now.\n"
+    end
+    MESSAGE:New(messageString, 20):ToAll()
+  end
+end
+
+
 intelMenu = MENU_COALITION:New(coalition.side.BLUE, "Intelligence")
-MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Get Current Attacks Planned", intelMenu, showAttackSchedule)
+MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Get Air Attacks Planned", intelMenu, showAirAttackSchedule)
+MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Get Ground Attacks Planned", intelMenu, showGroundAttackSchedule)
 --endregion
 
 --#region Setup Skynet
