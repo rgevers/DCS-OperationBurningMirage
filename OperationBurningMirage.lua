@@ -534,6 +534,9 @@ local function activateGroupByHealth(groupSetName, groupList, groupListSize, hea
     --If the health is *exactly* 0, don't spawn this group.
     env.info("Not activating groups for " .. groupSetName .. " because it is at 0 health.")
   else
+    if (healthPercent > 30) then 
+      alwaysOne = true -- Don't let it drop completely off unless health is very low. This is to complensate for zones with a small number of air defenses which otherwise tend not to spawn much below 70% health. Probably a better way to do this.
+    end
     -- If it is even slightly above zero, do.
     activateCount = Lround(healthPercent * desiredSize)
     -- Activate no less than one groups
