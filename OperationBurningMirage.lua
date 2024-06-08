@@ -661,15 +661,26 @@ end
 
 ---Step 0: Flip zones that are captured (0 health) and then start producing manufactured goods.
 local function StepO()
+
+  --New - Before doing anything else damage all blue zones by RESUPPLY_AMOUNT. If a blue zone is unsupported it should eventually flip back.
+  for zoneName, zone in pairs(CurrentState.TheaterHealth) do
+    if zone.Coalition == "blue" then
+      zone.Health = zone.Health - RESUPPLY_AMOUNT
+      if zone.Health == 0 then
+        zone.Health = 0
+      end
+    end
+  end
+
   for zoneName, zone in pairs(CurrentState.TheaterHealth) do
     if zone.Health == 0 then
       if zone.Coalition == "red" then
         zone.Coalition = "blue"
-        zone.Health = 100 -- Prevent a zone from flipping back and forth each day in the absence of other activity.
+        zone.Health = 300 -- Prevent a zone from flipping back and forth each day in the absence of other activity. Would take 3 days for a completely unsupplied zone to flip.
         env.info("Zone " .. zoneName .. " captured by blue.")
       else
         zone.Coalition = "red"
-        zone.Health = 100
+        zone.Health = 300
         env.info("Zone " .. zoneName .. " captured by red.")
       end
     end
