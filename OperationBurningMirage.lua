@@ -161,8 +161,30 @@ local function tableLength(T)
 end
 
 local function parseZoneFromUnitName(str)
-  local firstPart = string.match(str, "(.-)%-")
+  local i = string.find(str, "-", 0)
+  local firstPart = str:sub(1, i - 1)
   return firstPart
+end
+
+-- Function to sort a table by its values and return a list of key-value pairs
+local function sortTableByValue(t)
+  local sortedKeys = {}
+
+  -- Insert all keys into a list
+  for key in pairs(t) do
+    table.insert(sortedKeys, key)
+  end
+
+  -- Sort the list of keys based on the corresponding values in the table
+  table.sort(sortedKeys, function(a, b) return t[a] < t[b] end)
+
+  -- Create a new list of sorted key-value pairs
+  local sortedList = {}
+  for _, key in ipairs(sortedKeys) do
+    table.insert(sortedList, { key = key, value = t[key] })
+  end
+
+  return sortedList
 end
 --#endregion
 
@@ -431,6 +453,7 @@ local function spawnStrikeMission(arguments)
   local destinationTheater = arguments.destinationTheater
 
   env.info("Scheduling strike package from " .. sourceTheater .. ".")
+  MESSAGE:New(sourceTheater .. " is attacking " .. destinationTheater .. " via airstrike.", 20):ToAll()
   local groupName = "strike-" .. sourceTheater .. "-" .. destinationTheater
   local templateName = "template-red-strike"
   local strikeZone = destinationTheater .. "-strike"
@@ -459,13 +482,19 @@ local function spawnArmorMission(arguments)
   local sourceTheater = arguments.sourceTheater
   local destinationTheater = arguments.destinationTheater
   env.info("Scheduling armor package from " .. sourceTheater)
+  MESSAGE:New(sourceTheater .. " is attacking " .. destinationTheater .. " via armor.", 20):ToAll()
 
   local groupName = "armor-" .. sourceTheater .. "-" .. destinationTheater
-  local landingZone1 = sourceTheater .. "-convoy"
-  local landingZone2 = destinationTheater .. "-strike" -- TODO - Make resilient via warning if zone not found.
-  local templateName = "template-red-armor"
+  local sourceZone = sourceTheater .. "-convoy"
+  local destinationZone = destinationTheater .. "-strike" -- TODO - Make resilient via warning if zone not found.
 
-  local zone1 = ZONE:New(landingZone1)
+  local templateNum = math.random(0, 2)
+  local templateName = "template-red-armor"
+  if templateNum > 0 then
+    templateName = templateName .. "-" .. templateNum
+  end
+
+  local zone1 = ZONE:New(sourceZone)
   if zone1 == nil then
     -- env.warning("Unable to find spawn zone for convoy " .. groupName)
     --There was no explicit landing zone defined. Use the zone itself.
@@ -484,16 +513,15 @@ local function spawnArmorMission(arguments)
       :InitRepeatOnEngineShutDown()
       :OnSpawnGroup(
         function(SpawnGroup)
-          local zone2 = ZONE:New(landingZone2)
+          local zone2 = ZONE:New(destinationZone)
           if zone2 == nil then
-            -- env.warning("Unable to find destination zone for convoy " .. groupName)
             --There was no explicit landing zone defined. Use the zone itself.
             zone2 = ZONE:New(destinationTheater)
           end
           local zoneVec2 = zone2:GetPointVec3()
           local coordinate2 = COORDINATE:NewFromVec3(zoneVec2)
 
-          SpawnGroup:RouteGroundOnRoad(coordinate2, 46) --TODO - Delay start time? Randomize more?
+          SpawnGroup:RouteGroundOnRoad(coordinate2, 46)
         end
       )
       :Spawn()
@@ -963,6 +991,8 @@ if jsonStateContent then
         -- Not a very efficient approach but there aren't a lot of ways to deal with dynamic lists.
         local theaterAlreadyAttacking = false
         for alreadyAttacking, alreadyBeingAttacked in pairs(AttackSchedule) do --lawd the naming
+          alreadyAttacking = alreadyAttacking:sub(1, #alreadyAttacking - 1)    -- Remove suffix
+          -- env.info("Checking " .. alreadyAttacking .. " against " .. attackingTheater)
           if attackingTheater == alreadyAttacking then
             theaterAlreadyAttacking = true
             env.info(attackingTheater .. " is already attacking " .. alreadyBeingAttacked)
@@ -975,15 +1005,18 @@ if jsonStateContent then
           if CurrentState.TheaterHealth[attackingTheater].Coalition == "red" and CurrentState.TheaterHealth[attackingTheater].Health / CurrentState.TheaterHealth[attackingTheater].MaxHealth > .25 then
             --This zone should attack if it can.
             if CurrentState.TheaterHealth[attackingTheater].Airport then
-              --TODO If > 30 miles away, spawn a fixed wing attack flight. If < 30 miles spawn a helo attack flight.
-              local delay = math.random(30, 240) * 60
-              timer.scheduleFunction(spawnSeadMission,
-                { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay)
-              timer.scheduleFunction(spawnStrikeMission,
-                { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay + 120)
-              env.info("New air attack planned. " .. attackingTheater .. ":" .. theaterToAttack .. " : " .. delay)
-              AttackSchedule[attackingTheater] = theaterToAttack
-              AttackTime[attackingTheater] = delay
+              for i = 1, 3, 1 do
+                --TODO If > 30 miles away, spawn a fixed wing attack flight. If < 30 miles spawn a helo attack flight.
+                local delay = math.random(20, 800) * 60
+                timer.scheduleFunction(spawnSeadMission,
+                  { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay)
+                timer.scheduleFunction(spawnStrikeMission,
+                  { sourceTheater = attackingTheater, destinationTheater = theaterToAttack },
+                  timer.getTime() + delay + 120)
+                env.info("New air attack planned. " .. attackingTheater .. ":" .. theaterToAttack .. " : " .. delay)
+                AttackSchedule[attackingTheater .. i] = theaterToAttack
+                AttackTime[attackingTheater .. i] = delay
+              end
               break --Once we schedule an attack for this theater we don't need to schedule more.
             end
           end
@@ -1015,7 +1048,7 @@ if jsonStateContent then
             --This zone should attack if it can.
             --Make sure the distance is not too far.
             --TODO - Sort by nearest?
-            local delay = math.random(30, 240) * 60
+            local delay = math.random(5, 240) * 60
             timer.scheduleFunction(spawnArmorMission,
               { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay)
             env.info("New ground attack planned. " .. attackingTheater .. ":" .. theaterToAttack)
@@ -1344,33 +1377,53 @@ timer.scheduleFunction(DoBackgroundWork, "", timer.getTime() + 30)
 --#region Coalition Menus
 
 local function showAirAttackSchedule()
-  local timeDelay = math.floor((AttackTime[source] - timer.getTime()) / 60)
-  if timeDelay > 0 then
-    local messageString = "Currently Planned Air Attacks:\n"
-    for source, target in pairs(AttackSchedule) do
-      messageString = messageString ..
-          " " ..
-          source ..
-          " is launching an air attack on " ..
-          target .. " in " .. timeDelay .. " minutes from now.\n"
+  local messageString = "Currently Planned Air Attacks:\n"
+  local sortedPairs = sortTableByValue(AttackTime)
+  for _, pair in ipairs(sortedPairs) do
+    local theaterSource = pair.key
+    local attackTime = pair.value
+    local timeDelay = math.floor((attackTime - timer.getTime()) / 60)
+    if timeDelay < 180 then --Only show attacks that are happening in the next 3 hours.
+      if timeDelay > 0 then
+        messageString = messageString ..
+            " " ..
+            theaterSource:sub(1, #theaterSource - 1) ..
+            " is launching an air attack on " ..
+            AttackSchedule[theaterSource] .. " in " .. timeDelay .. " minutes.\n"
+      else
+        messageString = messageString ..
+            " " ..
+            theaterSource:sub(1, #theaterSource - 1) ..
+            " launched an air attack on " ..
+            AttackSchedule[theaterSource] .. " " .. 0 - timeDelay .. " minutes ago.\n"
+      end
     end
   end
   MESSAGE:New(messageString, 20):ToAll()
 end
 
 local function showGroundAttackSchedule()
-  local timeDelay = math.floor((GroundAttackTime[source] - timer.getTime()) / 60)
-  if timeDelay > 0 then
-    local messageString = "Currently Planned Ground Attacks:\n"
-    for source, target in pairs(GroundAttackSchedule) do
+  local messageString = "Currently Planned Ground Attacks:\n"
+  local sortedPairs = sortTableByValue(GroundAttackTime)
+  for _, pair in ipairs(sortedPairs) do
+    local theaterSource = pair.key
+    local attackTime = pair.value
+    local timeDelay = math.floor((attackTime - timer.getTime()) / 60)
+    if timeDelay > 0 then
       messageString = messageString ..
           " " ..
-          source ..
+          theaterSource ..
           " is launching a ground attack on " ..
-          target .. "in " .. timeDelay .. " minutes from now.\n"
+          GroundAttackSchedule[theaterSource] .. " in " .. timeDelay .. " minutes.\n"
+    else
+      messageString = messageString ..
+          " " ..
+          theaterSource ..
+          " launched a ground attack on " ..
+          GroundAttackSchedule[theaterSource] .. " " .. 0 - timeDelay .. " minutes ago.\n"
     end
-    MESSAGE:New(messageString, 20):ToAll()
   end
+  MESSAGE:New(messageString, 20):ToAll()
 end
 
 
