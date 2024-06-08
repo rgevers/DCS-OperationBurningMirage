@@ -693,7 +693,7 @@ local function StepO()
   for zoneName, zone in pairs(CurrentState.TheaterHealth) do
     if zone.Coalition == "blue" then
       zone.Health = zone.Health - RESUPPLY_AMOUNT
-      if zone.Health == 0 then
+      if zone.Health < 0 then
         zone.Health = 0
       end
     end
