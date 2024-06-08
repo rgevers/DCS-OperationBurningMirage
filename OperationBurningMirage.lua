@@ -834,6 +834,7 @@ end
 
 --#region Process Config Files
 local function ProcessConnections(connections)
+  env.info("Processing Connections")
   local zonesToAttack = {}
 
   for _, connection in ipairs(connections) do
@@ -984,6 +985,7 @@ if jsonStateContent then
 
   -- Iterate through Connections
   local theatersToAttack = ProcessConnections(Connections)
+
   --Schedule Air Attacks
   for _, theaterToAttack in ipairs(theatersToAttack) do
     local zone1 = ZONE:New(theaterToAttack .. "-strike")
@@ -1010,7 +1012,7 @@ if jsonStateContent then
             if CurrentState.TheaterHealth[attackingTheater].Airport then
               for i = 1, 3, 1 do
                 --TODO If > 30 miles away, spawn a fixed wing attack flight. If < 30 miles spawn a helo attack flight.
-                local delay = math.random(20, 800) * 60
+                local delay = math.random((240*(i-1)) + 10, (240*i)+10) * 60
                 timer.scheduleFunction(spawnSeadMission,
                   { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay)
                 timer.scheduleFunction(spawnStrikeMission,
