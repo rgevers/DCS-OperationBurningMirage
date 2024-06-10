@@ -8,6 +8,7 @@ AttackTime = {}
 GroundAttackSchedule = {}
 GroundAttackTime = {}
 Connections = {}
+AlphaZones = {}
 
 MANUFACTURE_AMOUNT = 200
 RESUPPLY_AMOUNT = 100
@@ -185,6 +186,49 @@ local function sortTableByValue(t)
   end
 
   return sortedList
+end
+
+-- Function to alphabetize and break into arrays of 10 items
+local function alphabetizePaged(tableToSort)
+  local t = {}
+  for n, _ in pairs(tableToSort) do table.insert(t, n) end
+
+  -- Alphabetize the table names
+  table.sort(t)
+
+  -- Initialize the new table to hold the chunks
+  local result = {}
+  local chunk = {}
+
+  -- Iterate through the alphabetized list
+  for _, name in ipairs(t) do
+    -- Insert the name into the current chunk
+    table.insert(chunk, name)
+    env.info("Inserted " .. name)
+    -- If the chunk has 10 items, insert it into the result and start a new chunk
+    if #chunk == 10 then
+      table.insert(result, chunk)
+      chunk = {}
+    end
+  end
+
+  -- Insert the last chunk if it has any remaining items
+  if #chunk > 0 then
+    table.insert(result, chunk)
+  end
+
+  return result
+end
+
+-- Function to return the first and last item from an array
+local function firstAndLast(arr)
+  if #arr == 0 then
+    return nil, nil
+  elseif #arr == 1 then
+    return arr[1], arr[1]
+  else
+    return arr[1], arr[#arr]
+  end
 end
 --#endregion
 
@@ -534,7 +578,7 @@ local function activateGroupByHealth(groupSetName, groupList, groupListSize, hea
     --If the health is *exactly* 0, don't spawn this group.
     env.info("Not activating groups for " .. groupSetName .. " because it is at 0 health.")
   else
-    if (healthPercent > .3) then 
+    if (healthPercent > .3) then
       alwaysOne = true -- Don't let it drop completely off unless health is very low. This is to complensate for zones with a small number of air defenses which otherwise tend not to spawn much below 70% health. Probably a better way to do this.
     end
     -- If it is even slightly above zero, do.
@@ -949,7 +993,6 @@ if jsonStateContent then
   end
 
   RunDailySimulation()
-
   local theaterCount = 0
   -- Iterate through TheaterList
   for theaterName, theater in pairs(CurrentState.TheaterHealth) do
@@ -1012,7 +1055,7 @@ if jsonStateContent then
             if CurrentState.TheaterHealth[attackingTheater].Airport then
               for i = 1, 3, 1 do
                 --TODO If > 30 miles away, spawn a fixed wing attack flight. If < 30 miles spawn a helo attack flight.
-                local delay = math.random((240*(i-1)) + 10, (240*i)+10) * 60
+                local delay = math.random((240 * (i - 1)) + 10, (240 * i) + 10) * 60
                 timer.scheduleFunction(spawnSeadMission,
                   { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay)
                 timer.scheduleFunction(spawnStrikeMission,
@@ -1066,9 +1109,9 @@ if jsonStateContent then
     end
   end
 
-  -- Spawn armor columns to attack convoys. Will pathing be hard here?
-  -- Identify convoys supplying this zone and attack them as well.
-  -- end
+  --Alphabetize zones and break them into pages.
+  AlphaZones = alphabetizePaged(MapTheaters)
+  env.info("Alphabetized Pages: " .. dump(AlphaZones))
 else
   env.info("Failed to read JSON file.")
 end
@@ -1381,6 +1424,20 @@ timer.scheduleFunction(DoBackgroundWork, "", timer.getTime() + 30)
 
 --#region Coalition Menus
 
+local function showPageHealths(zonePage)
+  local messageString = "Current Health:\n"
+
+  for _, name in ipairs(zonePage) do
+    messageString = messageString ..
+    name ..
+    ": " ..
+    math.floor((CurrentState.TheaterHealth[name].Health / CurrentState.TheaterHealth[name].MaxHealth * 100) + .5) ..
+    "%\n"
+  end
+
+  MESSAGE:New(messageString, 20):ToAll()
+end
+
 local function showAirAttackSchedule()
   local messageString = "Currently Planned Air Attacks:\n"
   local sortedPairs = sortTableByValue(AttackTime)
@@ -1435,6 +1492,13 @@ end
 intelMenu = MENU_COALITION:New(coalition.side.BLUE, "Intelligence")
 MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Get Air Attacks Planned", intelMenu, showAirAttackSchedule)
 MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Get Ground Attacks Planned", intelMenu, showGroundAttackSchedule)
+
+for _, zonePage in ipairs(AlphaZones) do
+  --Add a new menu item which will list each of the zones on a page.
+  local firstZone, lastZone = firstAndLast(zonePage)
+  MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Get Health for Zones " .. firstZone .. " to " .. lastZone, intelMenu,
+    showPageHealths, zonePage)
+end
 --endregion
 
 --#region Setup Skynet
