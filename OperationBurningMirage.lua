@@ -1,7 +1,7 @@
 --#region Global Variables
 TargetValuesJson = {}
 KillSummary = {}
-MapTheaters = {}
+MapZonesByTheaterName = {}
 CurrentState = {}
 AttackSchedule = {}
 AttackTime = {}
@@ -204,7 +204,7 @@ local function alphabetizePaged(tableToSort)
   for _, name in ipairs(t) do
     -- Insert the name into the current chunk
     table.insert(chunk, name)
-    env.info("Inserted " .. name)
+    -- env.info("Inserted " .. name)
     -- If the chunk has 10 items, insert it into the result and start a new chunk
     if #chunk == 10 then
       table.insert(result, chunk)
@@ -229,6 +229,21 @@ local function firstAndLast(arr)
   else
     return arr[1], arr[#arr]
   end
+end
+
+local function getKeysSortedByValue(t)
+  -- Create a list of keys from the table
+  local keys = {}
+  for k in pairs(t) do
+    table.insert(keys, k)
+  end
+
+  -- Sort the keys based on the table values
+  table.sort(keys, function(a, b)
+    return t[a] < t[b]
+  end)
+
+  return keys
 end
 --#endregion
 
@@ -500,7 +515,7 @@ local function spawnStrikeMission(arguments)
   MESSAGE:New(sourceTheater .. " is attacking " .. destinationTheater .. " via airstrike.", 20):ToAll()
   local groupName = "strike-" .. sourceTheater .. "-" .. destinationTheater
   local templateName = "template-red-strike"
-  local strikeZone = destinationTheater .. "-strike"
+  local strikeZoneName = destinationTheater .. "-strike"
 
   local zone1 = ZONE:New(sourceTheater)
   local zoneVec1 = zone1:GetPointVec3()
@@ -511,7 +526,19 @@ local function spawnStrikeMission(arguments)
       :OnSpawnGroup(
         function(spawnGroup)
           spawnGroup:OptionRTBAmmo(2147485694)
-          local strikeZone = ZONE:New(strikeZone)
+
+          local strikeZone = ZONE:New(strikeZoneName)
+          if strikeZone == nil then
+            env.warning("Unable to find strike zone for attack for " .. groupName)
+            --There was no explicit landing zone defined. Use the zone itself.
+            strikeZone = ZONE:New(destinationTheater)
+            if strikeZone == nil then
+              env.error("Unable to find zone for attack for " .. groupName)
+              --If we don't find the primary zone either this probably isn't on the right map.
+              return
+            end
+          end
+
           local strikeCoordinate = strikeZone:GetRandomCoordinate()
           local strikeAuftrag = AUFTRAG:NewBOMBING(strikeCoordinate, 10000)
           local strikeGrp = FLIGHTGROUP:New(spawnGroup)
@@ -999,7 +1026,7 @@ if jsonStateContent then
     local theaterZone = ZONE:New(theaterName)
     if (theaterZone ~= nil) then
       -- Load Zone for Theater and add to Zone list.
-      MapTheaters[theaterName] = theaterZone
+      MapZonesByTheaterName[theaterName] = theaterZone
       -- Get zone coords
       local theaterCoord = theaterZone:GetVec2()
       local theaterCoord3 = COORDINATE:NewFromVec2(theaterCoord)
@@ -1029,57 +1056,76 @@ if jsonStateContent then
   -- Iterate through Connections
   local theatersToAttack = ProcessConnections(Connections)
 
+  --TODO - Revamp attack schedule:
+  -- Identify source zones for air attack
+  -- Sort potential targets by distance
+  -- Schedule
+  -- For ground attacks, select zones with broken connections, sort by distance, attack.
+
+
   --Schedule Air Attacks
-  for _, theaterToAttack in ipairs(theatersToAttack) do
-    local zone1 = ZONE:New(theaterToAttack .. "-strike")
-    if (zone1 ~= nil) then
-      env.info("Planning attack on " .. theaterToAttack)
-      -- Find a suitable zone to attack this one.
-      for attackingTheater, zone in pairs(MapTheaters) do
-        -- Not a very efficient approach but there aren't a lot of ways to deal with dynamic lists.
-        local theaterAlreadyAttacking = false
-        for alreadyAttacking, alreadyBeingAttacked in pairs(AttackSchedule) do --lawd the naming
-          alreadyAttacking = alreadyAttacking:sub(1, #alreadyAttacking - 1)    -- Remove suffix
-          -- env.info("Checking " .. alreadyAttacking .. " against " .. attackingTheater)
-          if attackingTheater == alreadyAttacking then
-            theaterAlreadyAttacking = true
-            env.info(attackingTheater .. " is already attacking " .. alreadyBeingAttacked)
-            break --Once we find it in the list of attacking theaters we don't have to keep looking.
-          end
-        end
-        --This theater is already attacking a different theater. For now lets limit to one mission per.
-        if not theaterAlreadyAttacking then
-          -- env.info(attackingTheater .. " is a candidate.")
-          if CurrentState.TheaterHealth[attackingTheater].Coalition == "red" and CurrentState.TheaterHealth[attackingTheater].Health / CurrentState.TheaterHealth[attackingTheater].MaxHealth > .25 then
-            --This zone should attack if it can.
-            if CurrentState.TheaterHealth[attackingTheater].Airport then
-              for i = 1, 3, 1 do
-                --TODO If > 30 miles away, spawn a fixed wing attack flight. If < 30 miles spawn a helo attack flight.
-                local delay = math.random((240 * (i - 1)) + 10, (240 * i) + 10) * 60
-                timer.scheduleFunction(spawnSeadMission,
-                  { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + delay)
-                timer.scheduleFunction(spawnStrikeMission,
-                  { sourceTheater = attackingTheater, destinationTheater = theaterToAttack },
-                  timer.getTime() + delay + 120)
-                env.info("New air attack planned. " .. attackingTheater .. ":" .. theaterToAttack .. " : " .. delay)
-                AttackSchedule[attackingTheater .. i] = theaterToAttack
-                AttackTime[attackingTheater .. i] = delay
-              end
-              break --Once we schedule an attack for this theater we don't need to schedule more.
-            end
-          end
-        end
-      end
+  local totalAttacks = 8
+
+  local redAirportZones = {}
+  env.info("=== Planning Air Attacks ===")
+  for name, _ in pairs(MapZonesByTheaterName) do
+    if CurrentState.TheaterHealth[name].Coalition == "red" and CurrentState.TheaterHealth[name].Airport and CurrentState.TheaterHealth[name].Health / CurrentState.TheaterHealth[name].MaxHealth > .25 then
+      table.insert(redAirportZones, name)
+      table.insert(redAirportZones, name)
+      table.insert(redAirportZones, name)
+      --Kind of silly but we'll allow up to 3 attacks from each zone this way.
+      env.info("Adding " .. name .. " as a potential air attack source.")
+    end
+  end
+  --Randomize which strike launches from which airport.
+  shuffle(redAirportZones)
+  local blueTargetZonesHealthPercent = {}
+
+  for name, _ in pairs(MapZonesByTheaterName) do
+    if CurrentState.TheaterHealth[name].Coalition == "blue" then
+      blueTargetZonesHealthPercent[name] = CurrentState.TheaterHealth[name].Health /
+          CurrentState.TheaterHealth[name].MaxHealth
     end
   end
 
+  --Create a list of the zones sorted by health from lowest to highest.
+  local blueTargetZones = getKeysSortedByValue(blueTargetZonesHealthPercent)
+
+  local blueAttackZones = {}
+
+  --Take first totalAttacks items from target zones.
+  for i = 1, totalAttacks do
+    table.insert(blueAttackZones, blueTargetZones[i])
+  end
+
+  shuffle(blueAttackZones)
+
+  local attackTime = 0
+  --Until we run out of zones to attack from, schedule an attack on each of the zones focusing on lowest health first.
+  for i, attackingTheater in ipairs(redAirportZones) do
+    if i > totalAttacks or i > #blueAttackZones then
+      break
+    end
+    local theaterToAttack = blueAttackZones[i]
+    attackTime = math.random((i*60*60 + 10*60), (i*60*60 + 60*60))
+    timer.scheduleFunction(spawnSeadMission,
+      { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + attackTime)
+    timer.scheduleFunction(spawnStrikeMission,
+      { sourceTheater = attackingTheater, destinationTheater = theaterToAttack },
+      timer.getTime() + attackTime + 120)
+    env.info("New air attack planned. " .. attackingTheater .. ":" .. theaterToAttack .. " : " .. attackTime)
+    AttackSchedule[attackingTheater .. i] = theaterToAttack
+    AttackTime[attackingTheater .. i] = attackTime
+  end
+
+  env.info("=== Planning Ground Attacks ===")
   --Schedule Ground Attacks
   for _, theaterToAttack in ipairs(theatersToAttack) do
     local zone1 = ZONE:New(theaterToAttack .. "-strike")
     if (zone1 ~= nil) then
       env.info("Planning attack on " .. theaterToAttack)
       -- Find a suitable zone to attack this one.
-      for attackingTheater, zone in pairs(MapTheaters) do
+      for attackingTheater, _ in pairs(MapZonesByTheaterName) do
         -- Not a very efficient approach but there aren't a lot of ways to deal with dynamic lists.
         local theaterAlreadyAttacking = false
         for alreadyAttacking, alreadyBeingAttacked in pairs(GroundAttackSchedule) do --lawd the naming
@@ -1110,7 +1156,7 @@ if jsonStateContent then
   end
 
   --Alphabetize zones and break them into pages.
-  AlphaZones = alphabetizePaged(MapTheaters)
+  AlphaZones = alphabetizePaged(MapZonesByTheaterName)
   env.info("Alphabetized Pages: " .. dump(AlphaZones))
 else
   env.info("Failed to read JSON file.")
@@ -1216,7 +1262,7 @@ local function handleLandedEvent(event)
   local playerUnit = group:GetFirstUnit()
 
   local theaterName = nil
-  for key, theaterZone in pairs(MapTheaters) do
+  for key, theaterZone in pairs(MapZonesByTheaterName) do
     if theaterZone:IsCoordinateInZone(playerUnit:GetCoordinate()) then
       -- env.info("Kill was in zone: " .. key)
       theaterName = key
@@ -1286,7 +1332,7 @@ local function handleKillEvent(event)
     local type = string.lower(scenery:getTypeName())
     local theaterName = nil
     env.info("Kill Type: " .. type)
-    for key, theaterZone in pairs(MapTheaters) do
+    for key, theaterZone in pairs(MapZonesByTheaterName) do
       if (theaterZone:IsCoordinateInZone(COORDINATE:NewFromVec3(scenery:getPoint()))) then
         env.info("Kill was in zone: " .. key)
         theaterName = key
@@ -1340,7 +1386,7 @@ local function handleUnitLostEvent(event)
       --For units we will implementa default score value.
       score = 25
     end
-    for zoneName, zone in pairs(MapTheaters) do
+    for zoneName, zone in pairs(MapZonesByTheaterName) do
       if starts_with(unitName, string.lower(zoneName)) or starts_with(unitName, string.lower("sam-blue-" .. zoneName)) or starts_with(unitName, string.lower("sam-red-" .. zoneName)) or starts_with(unitName, string.lower("hvt-blue-" .. zoneName)) or starts_with(unitName, string.lower("hvt-red-" .. zoneName) or starts_with(unitName, string.lower("conv-" .. zoneName))) then
         if (starts_with(unitName, string.lower("conv-" .. zoneName))) then
           env.info("Unit hit on convoy from: " .. zoneName)
@@ -1429,10 +1475,10 @@ local function showPageHealths(zonePage)
 
   for _, name in ipairs(zonePage) do
     messageString = messageString ..
-    name ..
-    ": " ..
-    math.floor((CurrentState.TheaterHealth[name].Health / CurrentState.TheaterHealth[name].MaxHealth * 100) + .5) ..
-    "%\n"
+        name ..
+        ": " ..
+        math.floor((CurrentState.TheaterHealth[name].Health / CurrentState.TheaterHealth[name].MaxHealth * 100) + .5) ..
+        "%\n"
   end
 
   MESSAGE:New(messageString, 20):ToAll()
