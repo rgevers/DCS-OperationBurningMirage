@@ -8,7 +8,8 @@ AttackTime = {}
 GroundAttackSchedule = {}
 GroundAttackTime = {}
 Connections = {}
-AlphaZones = {}
+ZonesAlphabetized = {}
+BlueZonesAlphabetized = {}
 
 MANUFACTURE_AMOUNT = 200
 RESUPPLY_AMOUNT = 100
@@ -657,6 +658,21 @@ local function activateGroupsByCoalitionAndPrefix(coalitionId, prefix, theaterNa
 
   activateGroupByHealth(fullPrefix, groupList, numGroups, healthPercent, numGroups, false) --TODO - For now we always activate the maximum number of sam sites. Consider randomness later
 end
+
+local function activateCap(group, airport, zone, healthPercent, theaterName)
+  local squadronName = group .. "-" .. theaterName
+  local supply = math.floor(6 * healthPercent)
+  local capZone = ZONE:New(zone)
+
+  A2ADispatcher:SetSquadron(squadronName, airport, { group }, supply)
+  A2ADispatcher:SetSquadronCap(squadronName, capZone, 8000, 10000, 500, 600, 800, 900)
+  A2ADispatcher:SetSquadronCapRacetrack(squadronName, 10000, 20000, 90, 180, 10 * 60, 20 * 60)
+  A2ADispatcher:SetSquadronCapInterval(squadronName, 2, 30, 60, 1)
+  A2ADispatcher:SetSquadronTakeoffInAir(squadronName)
+  A2ADispatcher:SetSquadronFuelThreshold(squadronName, 0.4)
+
+  env.info("Activated CAP: " .. squadronName .. ": " .. supply .. " : " .. healthPercent)
+end
 --#endregion
 
 --#region Load Target Values
@@ -1090,7 +1106,7 @@ if jsonStateContent then
 
   --Create a list of the zones sorted by health from lowest to highest.
   local blueTargetZones = getKeysSortedByValue(blueTargetZonesHealthPercent)
-
+  BlueZonesAlphabetized = getKeysSortedByValue(blueTargetZonesHealthPercent)
   local blueAttackZones = {}
 
   --Take first totalAttacks items from target zones.
@@ -1107,7 +1123,7 @@ if jsonStateContent then
       break
     end
     local theaterToAttack = blueAttackZones[i]
-    attackTime = math.random((i*60*60 + 10*60), (i*60*60 + 60*60))
+    attackTime = math.random((i * 60 * 60 + 10 * 60), (i * 60 * 60 + 60 * 60))
     timer.scheduleFunction(spawnSeadMission,
       { sourceTheater = attackingTheater, destinationTheater = theaterToAttack }, timer.getTime() + attackTime)
     timer.scheduleFunction(spawnStrikeMission,
@@ -1156,8 +1172,8 @@ if jsonStateContent then
   end
 
   --Alphabetize zones and break them into pages.
-  AlphaZones = alphabetizePaged(MapZonesByTheaterName)
-  env.info("Alphabetized Pages: " .. dump(AlphaZones))
+  ZonesAlphabetized = alphabetizePaged(MapZonesByTheaterName)
+  -- env.info("Alphabetized Pages: " .. dump(AlphaZones))
 else
   env.info("Failed to read JSON file.")
 end
@@ -1539,12 +1555,58 @@ intelMenu = MENU_COALITION:New(coalition.side.BLUE, "Intelligence")
 MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Get Air Attacks Planned", intelMenu, showAirAttackSchedule)
 MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Get Ground Attacks Planned", intelMenu, showGroundAttackSchedule)
 
-for _, zonePage in ipairs(AlphaZones) do
+for _, zonePage in ipairs(ZonesAlphabetized) do
   --Add a new menu item which will list each of the zones on a page.
   local firstZone, lastZone = firstAndLast(zonePage)
   MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Get Health for Zones " .. firstZone .. " to " .. lastZone, intelMenu,
     showPageHealths, zonePage)
 end
+
+local CapMenu = MENU_COALITION:New(coalition.side.BLUE, "Request CAP")
+--Blue A2A Dispatcher
+DetectionSetGroup = SET_GROUP:New()
+DetectionSetGroup:FilterPrefixes({ "ewr-blue" })
+DetectionSetGroup:FilterStart()
+BlueDetection = DETECTION_AREAS:New(DetectionSetGroup, 30000)
+BlueA2ADispatcher = AI_A2A_DISPATCHER:New(BlueDetection)
+
+BlueA2ADispatcher:SetDefaultTakeoffInAir()
+BlueA2ADispatcher:SetDefaultLandingAtRunway()
+BlueA2ADispatcher:SetSquadron("cap-blue-1", AIRBASE.Sinai.Cairo_International_Airport, { "cap-blue" })
+
+-- Add menu option to cancel a CAP flight. Uses the ResourceCount setting for the squadron to disable spawning. -999 was chosen because MOOSE uses this internally when airbases are captured.
+local cancelCapMenu
+local activeCap = 0
+
+local function CancelCap(squadronName)
+  local squadron = BlueA2ADispatcher:GetSquadron(squadronName)
+  squadron.ResourceCount = -999
+  cancelCapMenu:Remove()
+  activeCap = activeCap - 1
+  MESSAGE:New("Cap " .. squadronName .. " cancelled. No further flights will launch. Current flight will remain on station.", 10):ToBlue()
+end
+
+local function BlueCap(squadron, zoneName)
+  if activeCap > 0 then
+    MESSAGE:New("CAP is already active. Cancel the current CAP flight before requesting a new one.", 10):ToBlue()
+    return
+  end
+  local zone = ZONE:New(zoneName)
+  BlueA2ADispatcher:SetSquadronCap(squadron, zone, 8000, 10000, 500, 600, 800, 900)
+  BlueA2ADispatcher:SetSquadronCapRacetrack(squadron, 10000, 20000, 90, 180, 10 * 60, 20 * 60)
+  BlueA2ADispatcher:SetSquadronCapInterval(squadron, 2, 30, 60, 1)
+  BlueA2ADispatcher:SetSquadronFuelThreshold(squadron, 0.3)
+  cancelCapMenu = MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Cancel CAP", CapMenu, CancelCap,
+    squadron)
+  activeCap = activeCap + 1
+  MESSAGE:New("CAP requested over " .. zoneName .. ".", 10):ToBlue()
+end
+
+for _, zoneName in ipairs(BlueZonesAlphabetized) do
+  MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Request CAP over " .. zoneName, CapMenu, BlueCap, "cap-blue-1",
+    zoneName)
+end
+
 --endregion
 
 --#region Setup Skynet
@@ -1563,7 +1625,6 @@ redIADS:activate()
 blueIADS:addSAMSitesByPrefix('sam-blue')
 blueIADS:addEarlyWarningRadarsByPrefix('ewr-blue')
 blueIADS:activate()
-
 
 if (debugMode == 1) then
   -- Add debug menus
