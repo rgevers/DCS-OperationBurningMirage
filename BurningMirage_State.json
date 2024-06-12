@@ -1,1 +1,587 @@
-{"LastModified":1718148896,"TheaterHealth":{"Abu Qir":{"Coalition":"red","Health":2000,"MaxHealth":2000,"TruckConnections":["Alexandria"]},"Abu Rudeis":{"Airport":"Abu Rudeis","Coalition":"red","Health":3000,"MaxHealth":3000,"ShipConnections":["Suez"]},"Al Ismailiya":{"Coalition":"red","Health":3000,"HeloConnections":["Kibrit"],"MaxHealth":3000},"Al Mansurah":{"Coalition":"red","Health":3000,"MaxHealth":3000,"PlaneConnections":["Cairo"]},"Al Minya":{"Coalition":"red","Health":3000,"MaxHealth":3000,"TruckConnections":["Faiyum"]},"Al Riyadh":{"Coalition":"red","Health":2000,"MaxHealth":2000,"TruckConnections":["Kubra"]},"Al Tor":{"Coalition":"red","Health":3000,"HeloConnections":["Gharib Cape","St. Catherine"],"MaxHealth":3000,"ShipConnections":["Abu Rudeis"]},"Al Zaqaziq":{"Coalition":"red","Health":2000,"MaxHealth":2000,"TruckConnections":["AzZaqaziq"]},"Alexandria":{"Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000,"ShipConnections":["Damietta"],"TruckConnections":["Damanhur"]},"Amman":{"Coalition":"red","Health":3000,"HeloConnections":["YU59"],"ManufacturingSource":true,"MaxHealth":3000},"Andersen":{"Airport":"Andersen AFB","Coalition":"blue","Health":2000,"HeloConnections":["GAlpha","Rota"],"ManufacturingSource":true,"MaxHealth":2000,"TruckConnections":["North West Field","GCharlie","GBravo"]},"Antonio":{"Coalition":"red","Health":2000,"HeloConnections":["GAlpha"],"MaxHealth":2000,"TruckConnections":["GCharlie","GBravo"]},"Ashdod":{"Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000,"TruckConnections":["Ramon"]},"Ashkelon":{"Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000,"TruckConnections":["Ramon"]},"Asyut":{"Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000,"TruckConnections":["Al Minya"]},"AzZaqaziq":{"Coalition":"red","Health":2000,"HeloConnections":["Al Mansurah","Al Ismailiya"],"MaxHealth":2000},"Bani Sweif":{"Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000,"TruckConnections":["Cairo"]},"BenGurion":{"Airport":"Ben-Gurion","Coalition":"red","Health":3000,"MaxHealth":3000,"TruckConnections":["Amman","Ramon"]},"Cairo":{"Coalition":"blue","Health":4000,"HeloConnections":["Kibrit","Wadi al Jandali"],"ManufacturingSource":true,"MaxHealth":4000,"PlaneConnections":["Andersen"]},"Damanhur":{"Coalition":"red","Health":3000,"HeloConnections":["Al Mansurah"],"ManufacturingSource":true,"MaxHealth":3000},"Damietta":{"Coalition":"red","Health":3000,"MaxHealth":3000,"ShipConnections":["Port Said"]},"Duba":{"Coalition":"red","Health":3000,"MaxHealth":3000,"ShipConnections":["Al Tor"]},"El Arish":{"Airport":"El Arish","Coalition":"blue","Health":2700,"MaxHealth":3000},"Faiyum":{"Coalition":"red","Health":3000,"MaxHealth":3000,"TruckConnections":["Cairo"]},"Faqous":{"Coalition":"red","Health":2000,"MaxHealth":2000,"TruckConnections":["Al Ismailiya"]},"GAlpha":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GBravo":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GCharlie":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GEcho":{"Coalition":"red","Health":2000,"ManufacturingSource":true,"MaxHealth":2000,"TruckConnections":["Olf Orote"]},"GFoxtrot":{"Coalition":"red","Health":1700,"MaxHealth":2000,"TruckConnections":["Olf Orote"]},"GGolf":{"Coalition":"red","Health":2000,"MaxHealth":2000,"TruckConnections":["Olf Orote"]},"GHotel":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GIndia":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GJuliet":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GKilo":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GLima":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GMike":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GNovember":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GOscar":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GPapa":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GQuebec":{"Coalition":"red","Health":2000,"MaxHealth":2000},"GRomeo":{"Coalition":"red","Health":2000,"MaxHealth":2000},"Gharib Cape":{"Coalition":"red","Health":3000,"MaxHealth":3000},"Hebron":{"Coalition":"red","Health":3000,"HeloConnections":["El Arish"],"ManufacturingSource":true,"MaxHealth":3000,"TruckConnections":["Ramon"]},"Kibrit":{"Airport":"Kibrit Air Base","Coalition":"red","Health":3000,"HeloConnections":["Melez"],"ManufacturingSource":true,"MaxHealth":3000},"Kubra":{"Coalition":"red","Health":2000,"MaxHealth":2000,"TruckConnections":["Al Mansurah"]},"Melez":{"Airport":"Nevatim","Coalition":"red","Health":2950,"MaxHealth":3000,"PlaneConnections":["Ramon"]},"Mitzpe Ramon":{"Coalition":"red","Health":2000,"MaxHealth":2000},"Nevatim":{"Airport":"Nevatim","Coalition":"red","Health":3000,"MaxHealth":3000},"North Saipan":{"Coalition":"red","Health":2000,"HeloConnections":["Saipan"],"ManufacturingSource":true,"MaxHealth":2000},"North West Field":{"Airport":"North West Field","Coalition":"blue","Health":2000,"MaxHealth":2000},"Olf Orote":{"Airport":"Olf Orote","Coalition":"red","Health":2000,"HeloConnections":["Antonio","GHotel"],"MaxHealth":2000,"ShipConnections":["Pagan","GIndia"]},"Ovda":{"Airport":"Ovda","Coalition":"red","Health":3000,"MaxHealth":3000,"PlaneConnections":["Ramon"]},"Pagan":{"Airport":"Pagan Airstrip","Coalition":"red","Health":2000,"HeloConnections":["GNovember","GMike","GOscar"],"MaxHealth":2000},"Port Said":{"Coalition":"red","Health":3000,"HeloConnections":["Al Ismailiya"],"MaxHealth":3000,"ShipConnections":["Ashkelon","Ashdod"]},"Quwaysina":{"Coalition":"red","Health":2000,"MaxHealth":2000,"TruckConnections":["Zifta"]},"Ramon":{"Airport":"Ramon Airbase","Coalition":"red","Health":3000,"HeloConnections":["Nevatim","El Arish"],"MaxHealth":3000,"PlaneConnections":["Al Mansurah"],"TruckConnections":["Mitzpe Ramon"]},"Rosetta":{"Coalition":"red","Health":2000,"MaxHealth":2000,"TruckConnections":["Damanhur"]},"Rota":{"Airport":"Rota Intl","Coalition":"red","Health":2000,"ManufacturingSource":true,"MaxHealth":2000,"PlaneConnections":["Tinian"]},"Saipan":{"Airport":"Saipan Intl","Coalition":"red","Health":2000,"HeloConnections":["Tinian"],"MaxHealth":2000},"Sixth Of October":{"Airport":"Cairo West","Coalition":"blue","Health":3000,"HeloConnections":["Cairo"],"ManufacturingSource":true,"MaxHealth":3000},"St. Catherine":{"Coalition":"red","Health":3000,"MaxHealth":3000,"PlaneConnections":["Ovda"]},"Sudr Cape":{"Coalition":"red","Health":3000,"ManufacturingSource":true,"MaxHealth":3000,"TruckConnections":["Suez"]},"Suez":{"Coalition":"red","Health":3000,"MaxHealth":3000,"TruckConnections":["Kibrit"]},"Tabuk":{"Coalition":"red","Health":3000,"HeloConnections":["St. Catherine"],"ManufacturingSource":true,"MaxHealth":3000,"TruckConnections":["Duba"]},"Tanta":{"Coalition":"red","Health":2000,"MaxHealth":2000,"TruckConnections":["Zifta"]},"Tinian":{"Airport":"Tinian Intl","Coalition":"red","Health":2000,"ManufacturingSource":true,"MaxHealth":2000},"Wadi al Jandali":{"Airport":"Wadi al Jandali","Coalition":"blue","Health":2000,"MaxHealth":2000},"YU59":{"Coalition":"red","Health":2000,"MaxHealth":2000},"Zifta":{"Coalition":"red","Health":2000,"MaxHealth":2000,"TruckConnections":["Al Mansurah"]}}}
+{
+    "LastModified": 1718148896,
+    "TheaterHealth": {
+        "Abu Qir": {
+            "Coalition": "red",
+            "ManufacturingSource": true,
+            "Health": 2000,
+            "MaxHealth": 2000,
+            "TruckConnections": [
+                "Alexandria"
+            ]
+        },
+        "Abu Rudeis": {
+            "Airport": "Abu Rudeis",
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000,
+            "ShipConnections": [
+                "Suez"
+            ]
+        },
+        "Al Ismailiya": {
+            "Coalition": "red",
+            "Health": 3000,
+            "HeloConnections": [
+                "Kibrit"
+            ],
+            "MaxHealth": 3000
+        },
+        "Al Mansurah": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000,
+            "PlaneConnections": [
+                "Cairo"
+            ]
+        },
+        "Al Minya": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000,
+            "TruckConnections": [
+                "Faiyum"
+            ]
+        },
+        "Al Riyadh": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000,
+            "TruckConnections": [
+                "Kubra"
+            ]
+        },
+        "Al Tor": {
+            "Coalition": "red",
+            "Health": 3000,
+            "HeloConnections": [
+                "Gharib Cape",
+                "St. Catherine"
+            ],
+            "MaxHealth": 3000,
+            "ShipConnections": [
+                "Abu Rudeis"
+            ]
+        },
+        "Al Zaqaziq": {
+            "Coalition": "red",
+            "Health": 2000,
+            "ManufacturingSource": true,
+            "MaxHealth": 2000,
+            "TruckConnections": [
+                "AzZaqaziq"
+            ]
+        },
+        "Alexandria": {
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000,
+            "ShipConnections": [
+                "Damietta"
+            ],
+            "TruckConnections": [
+                "Damanhur"
+            ]
+        },
+        "Amman": {
+            "Coalition": "red",
+            "Health": 3000,
+            "HeloConnections": [
+                "YU59"
+            ],
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "Andersen": {
+            "Airport": "Andersen AFB",
+            "Coalition": "blue",
+            "Health": 2000,
+            "HeloConnections": [
+                "GAlpha",
+                "Rota"
+            ],
+            "ManufacturingSource": true,
+            "MaxHealth": 2000,
+            "TruckConnections": [
+                "North West Field",
+                "GCharlie",
+                "GBravo"
+            ]
+        },
+        "Antonio": {
+            "Coalition": "red",
+            "Health": 2000,
+            "HeloConnections": [
+                "GAlpha"
+            ],
+            "MaxHealth": 2000,
+            "TruckConnections": [
+                "GCharlie",
+                "GBravo"
+            ]
+        },
+        "Ashdod": {
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000,
+            "TruckConnections": [
+                "Ramon"
+            ]
+        },
+        "Ashkelon": {
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000,
+            "TruckConnections": [
+                "Ramon"
+            ]
+        },
+        "Asyut": {
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000,
+            "TruckConnections": [
+                "Al Minya"
+            ]
+        },
+        "AzZaqaziq": {
+            "Coalition": "red",
+            "Health": 2000,
+            "HeloConnections": [
+                "Al Mansurah",
+                "Al Ismailiya"
+            ],
+            "MaxHealth": 2000
+        },
+        "Bani Sweif": {
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000,
+            "TruckConnections": [
+                "Cairo"
+            ]
+        },
+        "BenGurion": {
+            "Airport": "Ben-Gurion",
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000,
+            "TruckConnections": [
+                "Amman",
+                "Ramon"
+            ]
+        },
+        "Cairo": {
+            "Coalition": "blue",
+            "Health": 4000,
+            "HeloConnections": [
+                "Kibrit",
+                "Wadi al Jandali"
+            ],
+            "ManufacturingSource": true,
+            "MaxHealth": 4000,
+            "PlaneConnections": [
+                "Andersen"
+            ]
+        },
+        "Damanhur": {
+            "Coalition": "red",
+            "Health": 3000,
+            "HeloConnections": [
+                "Al Mansurah"
+            ],
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "Damietta": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000,
+            "ShipConnections": [
+                "Port Said"
+            ]
+        },
+        "Duba": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000,
+            "ShipConnections": [
+                "Al Tor"
+            ]
+        },
+        "El Arish": {
+            "Airport": "El Arish",
+            "Coalition": "blue",
+            "Health": 2700,
+            "MaxHealth": 3000
+        },
+        "Faiyum": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000,
+            "TruckConnections": [
+                "Cairo"
+            ]
+        },
+        "Faqous": {
+            "Coalition": "red",
+            "Health": 2000,
+            "ManufacturingSource": true,
+            "MaxHealth": 2000,
+            "TruckConnections": [
+                "Al Ismailiya"
+            ]
+        },
+        "GAlpha": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GBravo": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GCharlie": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GEcho": {
+            "Coalition": "red",
+            "Health": 2000,
+            "ManufacturingSource": true,
+            "MaxHealth": 2000,
+            "TruckConnections": [
+                "Olf Orote"
+            ]
+        },
+        "GFoxtrot": {
+            "Coalition": "red",
+            "Health": 1700,
+            "MaxHealth": 2000,
+            "TruckConnections": [
+                "Olf Orote"
+            ]
+        },
+        "GGolf": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000,
+            "TruckConnections": [
+                "Olf Orote"
+            ]
+        },
+        "GHotel": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GIndia": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GJuliet": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GKilo": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GLima": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GMike": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GNovember": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GOscar": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GPapa": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GQuebec": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "GRomeo": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "Gharib Cape": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "Hebron": {
+            "Coalition": "red",
+            "Health": 3000,
+            "HeloConnections": [
+                "El Arish"
+            ],
+            "ManufacturingSource": true,
+            "MaxHealth": 3000,
+            "TruckConnections": [
+                "Ramon"
+            ]
+        },
+        "Kibrit": {
+            "Airport": "Kibrit Air Base",
+            "Coalition": "red",
+            "Health": 3000,
+            "HeloConnections": [
+                "Melez"
+            ],
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "Kubra": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000,
+            "TruckConnections": [
+                "Al Mansurah"
+            ]
+        },
+        "Melez": {
+            "Airport": "Nevatim",
+            "Coalition": "red",
+            "Health": 2950,
+            "MaxHealth": 3000,
+            "PlaneConnections": [
+                "Ramon"
+            ]
+        },
+        "Mitzpe Ramon": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "Nevatim": {
+            "Airport": "Nevatim",
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000
+        },
+        "North Saipan": {
+            "Coalition": "red",
+            "Health": 2000,
+            "HeloConnections": [
+                "Saipan"
+            ],
+            "ManufacturingSource": true,
+            "MaxHealth": 2000
+        },
+        "North West Field": {
+            "Airport": "North West Field",
+            "Coalition": "blue",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "Olf Orote": {
+            "Airport": "Olf Orote",
+            "Coalition": "red",
+            "Health": 2000,
+            "HeloConnections": [
+                "Antonio",
+                "GHotel"
+            ],
+            "MaxHealth": 2000,
+            "ShipConnections": [
+                "Pagan",
+                "GIndia"
+            ]
+        },
+        "Ovda": {
+            "Airport": "Ovda",
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000,
+            "PlaneConnections": [
+                "Ramon"
+            ]
+        },
+        "Pagan": {
+            "Airport": "Pagan Airstrip",
+            "Coalition": "red",
+            "Health": 2000,
+            "HeloConnections": [
+                "GNovember",
+                "GMike",
+                "GOscar"
+            ],
+            "MaxHealth": 2000
+        },
+        "Port Said": {
+            "Coalition": "red",
+            "Health": 3000,
+            "HeloConnections": [
+                "Al Ismailiya"
+            ],
+            "MaxHealth": 3000,
+            "ShipConnections": [
+                "Ashkelon",
+                "Ashdod"
+            ]
+        },
+        "Quwaysina": {
+            "Coalition": "red",
+            "Health": 2000,
+            "ManufacturingSource": true,
+            "MaxHealth": 2000,
+            "TruckConnections": [
+                "Zifta"
+            ]
+        },
+        "Ramon": {
+            "Airport": "Ramon Airbase",
+            "Coalition": "red",
+            "Health": 3000,
+            "HeloConnections": [
+                "Nevatim",
+                "El Arish"
+            ],
+            "MaxHealth": 3000,
+            "PlaneConnections": [
+                "Al Mansurah"
+            ],
+            "TruckConnections": [
+                "Mitzpe Ramon"
+            ]
+        },
+        "Rosetta": {
+            "Coalition": "red",
+            "ManufacturingSource": true,
+            "Health": 2000,
+            "MaxHealth": 2000,
+            "TruckConnections": [
+                "Damanhur"
+            ]
+        },
+        "Rota": {
+            "Airport": "Rota Intl",
+            "Coalition": "red",
+            "Health": 2000,
+            "ManufacturingSource": true,
+            "MaxHealth": 2000,
+            "PlaneConnections": [
+                "Tinian"
+            ]
+        },
+        "Saipan": {
+            "Airport": "Saipan Intl",
+            "Coalition": "red",
+            "Health": 2000,
+            "HeloConnections": [
+                "Tinian"
+            ],
+            "MaxHealth": 2000
+        },
+        "Sixth Of October": {
+            "Airport": "Cairo West",
+            "Coalition": "blue",
+            "Health": 3000,
+            "HeloConnections": [
+                "Cairo"
+            ],
+            "ManufacturingSource": true,
+            "MaxHealth": 3000
+        },
+        "St. Catherine": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000,
+            "PlaneConnections": [
+                "Ovda"
+            ]
+        },
+        "Sudr Cape": {
+            "Coalition": "red",
+            "Health": 3000,
+            "ManufacturingSource": true,
+            "MaxHealth": 3000,
+            "TruckConnections": [
+                "Suez"
+            ]
+        },
+        "Suez": {
+            "Coalition": "red",
+            "Health": 3000,
+            "MaxHealth": 3000,
+            "TruckConnections": [
+                "Kibrit"
+            ]
+        },
+        "Tabuk": {
+            "Coalition": "red",
+            "Health": 3000,
+            "HeloConnections": [
+                "St. Catherine"
+            ],
+            "ManufacturingSource": true,
+            "MaxHealth": 3000,
+            "TruckConnections": [
+                "Duba"
+            ]
+        },
+        "Tanta": {
+            "Coalition": "red",
+            "ManufacturingSource": true,
+            "Health": 2000,
+            "MaxHealth": 2000,
+            "TruckConnections": [
+                "Zifta"
+            ]
+        },
+        "Tinian": {
+            "Airport": "Tinian Intl",
+            "Coalition": "red",
+            "Health": 2000,
+            "ManufacturingSource": true,
+            "MaxHealth": 2000
+        },
+        "Wadi al Jandali": {
+            "Airport": "Wadi al Jandali",
+            "Coalition": "blue",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "YU59": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000
+        },
+        "Zifta": {
+            "Coalition": "red",
+            "Health": 2000,
+            "MaxHealth": 2000,
+            "TruckConnections": [
+                "Al Mansurah"
+            ]
+        }
+    }
+}

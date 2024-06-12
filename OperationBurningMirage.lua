@@ -1342,15 +1342,13 @@ local function handleKillEvent(event)
     end
     if (sceneryTypeName == nil) then
       sceneryTypeName = ""
-    end
-    env.info("Scenery Kill Event Handled: " .. sceneryTypeName .. " : " .. sceneryName)
-
-    if ~scenery:getTypeName() then
       env.info("Received a scenery kill event with no type at mission time: " .. timer.getTime())
       return
     end
 
-    local type = string.lower(scenery:getTypeName())
+    env.info("Scenery Kill Event Handled: " .. sceneryTypeName .. " : " .. sceneryName)
+
+    local type = string.lower(sceneryTypeName)
     local theaterName = nil
     env.info("Kill Type: " .. type)
     for key, theaterZone in pairs(MapZonesByTheaterName) do
