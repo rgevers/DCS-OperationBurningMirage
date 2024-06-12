@@ -1332,8 +1332,7 @@ local function handlePlayerOccupySlot(event)
 end
 
 local function handleKillEvent(event)
-  env.info("Kill Event Handled: ")
-  env.info("Type: " .. Object.getCategory(event.target))
+  env.info("Kill Event Handled. Type: " .. Object.getCategory(event.target))
   if (Object.getCategory(event.target) == Object.Category.SCENERY or Object.getCategory(event.target) == Object.Category.STATIC) then -- Wow is this stuff woefully underdocumented in the "official" docs.
     local scenery = event.target
     local sceneryTypeName = scenery:getTypeName()
@@ -1345,6 +1344,12 @@ local function handleKillEvent(event)
       sceneryTypeName = ""
     end
     env.info("Scenery Kill Event Handled: " .. sceneryTypeName .. " : " .. sceneryName)
+
+    if ~scenery:getTypeName() then
+      env.info("Received a scenery kill event with no type at mission time: " .. timer.getTime())
+      return
+    end
+
     local type = string.lower(scenery:getTypeName())
     local theaterName = nil
     env.info("Kill Type: " .. type)
@@ -1403,7 +1408,7 @@ local function handleUnitLostEvent(event)
       score = 25
     end
     for zoneName, zone in pairs(MapZonesByTheaterName) do
-      if starts_with(unitName, string.lower(zoneName)) or starts_with(unitName, string.lower("sam-blue-" .. zoneName)) or starts_with(unitName, string.lower("sam-red-" .. zoneName)) or starts_with(unitName, string.lower("hvt-blue-" .. zoneName)) or starts_with(unitName, string.lower("hvt-red-" .. zoneName) or starts_with(unitName, string.lower("conv-" .. zoneName))) then
+      if starts_with(unitName, string.lower(zoneName)) or starts_with(unitName, string.lower("sam-blue-" .. zoneName)) or starts_with(unitName, string.lower("sam-red-" .. zoneName)) or starts_with(unitName, string.lower("hvt-blue-" .. zoneName)) or starts_with(unitName, string.lower("hvt-red-" .. zoneName)) or starts_with(unitName, string.lower("conv-" .. zoneName)) then
         if (starts_with(unitName, string.lower("conv-" .. zoneName))) then
           env.info("Unit hit on convoy from: " .. zoneName)
         else
@@ -1465,7 +1470,7 @@ function DoBackgroundWork(ourArgument, time)
   -- env.info(JSON:encode(CurrentState))
   write_file(StateFilePath, JSON:encode(CurrentState))
   --Display summary
-  local stringOutput = "Damage Summary: \n"
+  local stringOutput = "Damage Summary: \n" --TODO - Add mission timestamp
   local hasValue = false
   for key, score in pairs(KillSummary) do
     hasValue = true
