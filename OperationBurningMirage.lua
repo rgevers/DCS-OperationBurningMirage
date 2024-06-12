@@ -13,6 +13,7 @@ BlueZonesAlphabetized = {}
 
 MANUFACTURE_AMOUNT = 200
 RESUPPLY_AMOUNT = 100
+ATTRITION_AMOUNT = 50
 --#endregion
 
 --#region Drawing Functions
@@ -779,10 +780,10 @@ end
 
 ---Step 0: Flip zones that are captured (0 health) and then start producing manufactured goods.
 local function StepO()
-  --New - Before doing anything else damage all blue zones by RESUPPLY_AMOUNT. If a blue zone is unsupported it should eventually flip back.
+  --New - Before doing anything else damage all blue zones by ATTRITION_AMOUNT. If a blue zone is unsupported it should eventually flip back.
   for zoneName, zone in pairs(CurrentState.TheaterHealth) do
     if zone.Coalition == "blue" then
-      zone.Health = zone.Health - RESUPPLY_AMOUNT
+      zone.Health = zone.Health - ATTRITION_AMOUNT
       if zone.Health < 0 then
         zone.Health = 0
       end
@@ -793,11 +794,11 @@ local function StepO()
     if zone.Health == 0 then
       if zone.Coalition == "red" then
         zone.Coalition = "blue"
-        zone.Health = 300 -- Prevent a zone from flipping back and forth each day in the absence of other activity. Would take 3 days for a completely unsupplied zone to flip.
+        zone.Health = MANUFACTURE_AMOUNT -- Prevent a zone from flipping back and forth each day in the absence of other activity. Gives about a 4 day buffer.
         env.info("Zone " .. zoneName .. " captured by blue.")
       else
         zone.Coalition = "red"
-        zone.Health = 300
+        zone.Health = MANUFACTURE_AMOUNT
         env.info("Zone " .. zoneName .. " captured by red.")
       end
     end
@@ -1589,7 +1590,7 @@ local function CancelCap(squadronName)
   MESSAGE:New("Cap " .. squadronName .. " cancelled. No further flights will launch. Current flight will remain on station.", 10):ToBlue()
 end
 
-local function BlueCap(squadron, zoneName)
+local function blueCap(squadron, zoneName)
   if activeCap > 0 then
     MESSAGE:New("CAP is already active. Cancel the current CAP flight before requesting a new one.", 10):ToBlue()
     return
@@ -1606,7 +1607,7 @@ local function BlueCap(squadron, zoneName)
 end
 
 for _, zoneName in ipairs(BlueZonesAlphabetized) do
-  MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Request CAP over " .. zoneName, CapMenu, BlueCap, "cap-blue-1",
+  MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Request CAP over " .. zoneName, CapMenu, blueCap, "cap-blue-1",
     zoneName)
 end
 
